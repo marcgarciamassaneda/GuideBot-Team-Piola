@@ -126,7 +126,7 @@ class guide:
         route = nx.shortest_path(graph, _nearest_node_s, _nearest_node_d)
         route_info = guide._get_route_info(graph, route, source_location,
                                            destination_location)
-        return route_info
+        return (route_info, route)
 
     def plot_directions(graph, source_location, destination_location,
                         directions, filename, width=400, height=400):
