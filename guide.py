@@ -47,10 +47,10 @@ class guide:
         mid_x = mid[1]
         dst_y = dst[0]
         dst_x = dst[1]
-        v = (mid_y-src_y, mid_x-src_x)
-        u = (mid_y-dst_y, mid_x-dst_x)
-        return math.acos(abs(u[0]*v[0] + u[1]*v[1]) /
-                         (guide._modul(u) + guide._modul(v)))
+        v = (src_y-mid_y, src_x-mid_x)
+        u = (dst_y-mid_y, dst_x-mid_x)
+        return math.degrees(math.acos(abs(u[0]*v[0] + u[1]*v[1]) /
+                            (guide._modul(u) * guide._modul(v))))
 
     def _get_route(graph, directions, source_location, destination_location):
         route = []
