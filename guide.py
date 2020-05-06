@@ -52,6 +52,43 @@ class guide:
         return math.degrees(math.acos(abs(u[0]*v[0] + u[1]*v[1]) /
                             (guide._modul(u) * guide._modul(v))))
 
+    def _route_particular_case(graph, directions, node, source_location,
+                               destination_location):
+        node_info = dict.fromkeys(['angle', 'current_name', 'dst', 'length',
+                                  'mid', 'next_name', 'src'])
+        node_info['angle'] = None
+        if node == 0:
+            node_info['src'] = (source_location[0], source_location[1])
+            node_info['mid'] = (graph.nodes[directions[node]]['y'],
+                                graph.nodes[directions[node]]['x'])
+            node_info['dst'] = (graph.nodes[directions[node + 1]]['y'],
+                                graph.nodes[directions[node + 1]]['x'])
+            node_info['current_name'] = None
+            node_info['length'] = None
+            next_edge = graph.adj[directions[0]][directions[1]][0]
+            node_info['next_name'] = next_edge['name']
+        if node == len(directions) - 2:
+            node_info['src'] = (graph.nodes[directions[node]]['y'],
+                                graph.nodes[directions[node]]['x'])
+            node_info['mid'] = (graph.nodes[directions[node + 1]]['y'],
+                                graph.nodes[directions[node + 1]]['x'])
+            node_info['dst'] = (destination_location[0],
+                                destination_location[1])
+            edge = graph.adj[directions[node]][directions[node+1]][0]
+            node_info['current_name'] = edge['name']
+            node_info['length'] = edge['length']
+            node_info['next_name'] = None
+        if node == len(directions) - 1:
+            node_info['src'] = (graph.nodes[directions[node]]['y'],
+                                graph.nodes[directions[node]]['x'])
+            node_info['mid'] = (destination_location[0],
+                                destination_location[1])
+            node_info['dst'] = None
+            node_info['current_name'] = None
+            node_info['length'] = None
+            node_info['next_name'] = None
+        return node_info
+
     def _get_route(graph, directions, source_location, destination_location):
         route = []
         for i in range(len(directions) - 2):
@@ -72,6 +109,9 @@ class guide:
                                                   node_info['mid'],
                                                   node_info['dst'])
             route.append(node_info)
+        route.insert(0, guide._route_particular_case(graph, directions, 0, source_location, destination_location))
+        route.append(guide._route_particular_case(graph, directions, len(directions)- 2, source_location, destination_location))
+        route.append(guide._route_particular_case(graph, directions, len(directions)- 1, source_location, destination_location))
         return route
 
     def get_directions(graph, source_location, destination_location):
