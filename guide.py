@@ -1,7 +1,8 @@
 import osmnx as ox
 import networkx as nx
-import matplotlib.pyplot as plt
+from staticmap import StaticMap, CircleMarker, Line
 import math
+import os
 
 
 class guide:
@@ -109,7 +110,8 @@ class guide:
                                                   node_info['mid'],
                                                   node_info['dst'])
             route.append(node_info)
-        route.insert(0, guide._route_particular_case(graph, directions, 0, source_location, destination_location))
+        route.insert(0, guide._route_particular_case(graph, directions, 0,
+                     source_location, destination_location))
         route.append(guide._route_particular_case(graph, directions, len(directions)- 2, source_location, destination_location))
         route.append(guide._route_particular_case(graph, directions, len(directions)- 1, source_location, destination_location))
         return route
@@ -140,7 +142,24 @@ class guide:
 
     def plot_directions(graph, source_location, destination_location,
                         directions, filename, width=400, height=400):
-        ox.plot_graph_route(graph, directions)
+        mapa = StaticMap(width, height)
+        mapa.add_marker(CircleMarker((source_location[1], source_location[0]), 'blue', 20))
+        mapa.add_marker(CircleMarker((destination_location[1], destination_location[0]), 'blue', 20))
+        for i in range(len(directions) - 2):
+            coordinates_first = (directions[i]['mid'][1], directions[i]['mid'][0])
+            coordinates_second = (directions[i]['dst'][1], directions[i]['dst'][0])
+            mapa.add_marker(CircleMarker(coordinates_first, 'red', 10))
+            coordinates = (coordinates_first, coordinates_second)
+            mapa.add_line(Line(coordinates, 'red', 4))
+        penultimate_coordinates = (directions[-1]['src'][1], directions[-1]['src'][0])
+        mapa.add_marker(CircleMarker(penultimate_coordinates, 'red', 10))
+        last_line_coordinates = (penultimate_coordinates, (destination_location[1], destination_location[0]))
+        mapa.add_line(Line(last_line_coordinates, 'blue', 4))
+        second_coordinates = (directions[0]['mid'][1], directions[0]['mid'][0])
+        first_line_coordinates = (second_coordinates, (source_location[1], source_location[0]))
+        mapa.add_line(Line(first_line_coordinates, 'blue', 4))
+        imatge = mapa.render()
+        imatge.save(filename)
 
     def yolo(graph):
         # for each node and its information...
