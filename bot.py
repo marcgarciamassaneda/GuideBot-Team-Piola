@@ -1,6 +1,5 @@
 import telegram.ext as telegram
 from guide import guide
-import pandas as pd
 from staticmap import StaticMap, CircleMarker
 import random
 import os
@@ -16,14 +15,14 @@ def start(update, context):
 
 def help(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="I can be your captain and help you go wherever you want!👨‍✈️\nJust type the following commands:")
-    context.bot.send_message(chat_id=update.effective_chat.id, text="/author - show my creators\n/go destiny - start the guide to arrive from the actual position to the destiny\n/where - give your actual position\n/cancel - cancel the active guide system")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="/author - show my creators\n/go destiny - start the guide to arrive from your actual position to the destiny\n/where - give your actual position\n/cancel - cancel the active guide system")
 
 def author(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="My creators are Marc Garcia and Jofre Poch, the Team Piola!")
     context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('authors.JPG', 'rb'))
 
 
-def go(update, context):
+#def go(update, context):
 
 
 
@@ -61,11 +60,10 @@ dispatcher = updater.dispatcher
 dispatcher.add_handler(telegram.CommandHandler('start', start))
 dispatcher.add_handler(telegram.CommandHandler('help', help))
 dispatcher.add_handler(telegram.CommandHandler('author', author))
-dispatcher.add_handler(telegram.CommandHandler('go', go))
+#dispatcher.add_handler(telegram.CommandHandler('go', go))
 dispatcher.add_handler(telegram.MessageHandler(telegram.Filters.location,
                                                where))
 dispatcher.add_handler(telegram.CommandHandler('cancel', cancel))
-#dispatcher.add_handler(telegram.MessageHandler(Filters.location, where))
 
 # engega el bot
 updater.start_polling()

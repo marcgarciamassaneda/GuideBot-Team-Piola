@@ -36,23 +36,6 @@ class guide:
     def _distancia(x, y, x2, y2):
         return math.sqrt((x-x2)**2 + (y-y2)**2)
 
-    def _modul(vector):
-        vector_y = vector[0]
-        vector_x = vector[1]
-        return math.sqrt(vector_y**2 + vector_x**2)
-
-    def _get_angle(src, mid, dst):
-        src_y = src[0]
-        src_x = src[1]
-        mid_y = mid[0]
-        mid_x = mid[1]
-        dst_y = dst[0]
-        dst_x = dst[1]
-        v = (src_y-mid_y, src_x-mid_x)
-        u = (dst_y-mid_y, dst_x-mid_x)
-        return math.degrees(math.acos(abs(u[0]*v[0] + u[1]*v[1]) /
-                            (guide._modul(u) * guide._modul(v))))
-
     def _route_particular_case(graph, directions, node, source_location,
                                destination_location):
         node_info = dict.fromkeys(['angle', 'current_name', 'dst', 'length',
@@ -106,14 +89,14 @@ class guide:
             node_info['length'] = edge['length']
             next_edge = graph.adj[directions[i+1]][directions[i+2]][0]
             node_info['next_name'] = next_edge['name']
-            node_info['angle'] = guide._get_angle(node_info['src'],
-                                                  node_info['mid'],
-                                                  node_info['dst'])
+            node_info['angle'] = ox.geo_utils.get_bearing(node_info['mid'],
+                                                          node_info['dst'])
+            - ox.geo_utils.get_bearing(node_info['src'], node_info['mid'])
             route.append(node_info)
         route.insert(0, guide._route_particular_case(graph, directions, 0,
                      source_location, destination_location))
-        route.append(guide._route_particular_case(graph, directions, len(directions)- 2, source_location, destination_location))
-        route.append(guide._route_particular_case(graph, directions, len(directions)- 1, source_location, destination_location))
+        route.append(guide._route_particular_case(graph, directions, len(directions) - 2, source_location, destination_location))
+        route.append(guide._route_particular_case(graph, directions, len(directions) - 1, source_location, destination_location))
         return route
 
     def get_directions(graph, source_location, destination_location):
