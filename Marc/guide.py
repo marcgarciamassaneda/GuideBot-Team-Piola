@@ -1,5 +1,6 @@
 import osmnx as ox
 import networkx as nx
+from haversine import haversine
 from staticmap import StaticMap, CircleMarker, Line
 import math
 import os
@@ -32,9 +33,6 @@ class guide:
 
     def print_graph(graph):
         ox.plot_graph(graph)
-
-    def _distancia(x, y, x2, y2):
-        return math.sqrt((x-x2)**2 + (y-y2)**2)
 
     def _route_particular_case(graph, directions, node, source_location,
                                destination_location):
@@ -89,9 +87,7 @@ class guide:
             node_info['length'] = edge['length']
             next_edge = graph.adj[directions[i+1]][directions[i+2]][0]
             node_info['next_name'] = next_edge['name']
-            node_info['angle'] = ox.geo_utils.get_bearing(node_info['mid'],
-                                                          node_info['dst'])
-            - ox.geo_utils.get_bearing(node_info['src'], node_info['mid'])
+            node_info['angle'] = next_edge['bearing'] - edge['bearing']
             route.append(node_info)
         route.insert(0, guide._route_particular_case(graph, directions, 0,
                      source_location, destination_location))
@@ -109,11 +105,11 @@ class guide:
         for node, info in graph.nodes.items():
             y = info['y']
             x = info['x']
-            dist = guide._distancia(x, y, src_x, src_y)
+            dist = haversine((y, x), (src_y, src_x))
             if dist < src_min_dist:
                 new_src = node
                 src_min_dist = dist
-            dist2 = guide._distancia(x, y, dst_x, dst_y)
+            dist2 = haversine((y, x), (dst_y, dst_x))
             if dist2 < dst_min_dist:
                 new_dst = node
                 dst_min_dist = dist2
