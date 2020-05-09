@@ -68,7 +68,7 @@ def go(update, context):
     mid_lat = route[0]['mid'][0]
     mid_lon = route[0]['mid'][1]
     mid_name = route[0]['next_name']
-    message = "You are at %s, %s \nStart at checkpoint #1: %s, %s %s" % (lat, lon, mid_lat, mid_lon, mid_name)
+    message = "You are at %s, %s \nStart at checkpoint #1: %s, %s (%s)" % (lat, lon, mid_lat, mid_lon, mid_name)
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
