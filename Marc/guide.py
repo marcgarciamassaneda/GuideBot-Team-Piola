@@ -1,9 +1,6 @@
 import osmnx as ox
 import networkx as nx
-from haversine import haversine
 from staticmap import StaticMap, CircleMarker, Line
-import math
-import os
 
 
 class guide:
@@ -33,6 +30,26 @@ class guide:
 
     def print_graph(graph):
         ox.plot_graph(graph)
+
+    def _get_angle(angle):
+        if angle is None:
+            return "Go straight through"
+        if angle < 0:
+            angle += 360
+        if angle < 22.5 or angle > 337.5:
+            return "Go straight through"
+        elif angle < 67.5:
+            return "Turn half right and go straight through"
+        elif angle < 112.5:
+            return "Turn right and go straight through"
+        elif angle < 180:
+            return "Turn strong right and go straight through"
+        elif angle < 247.5:
+            return "Turn strong left and go straight through"
+        elif angle < 292.5:
+            return "Turn left and go straight through"
+        else:
+            return "Turn half left and go straight through"
 
     def _route_particular_case(graph, directions, node, source_location,
                                destination_location):
@@ -96,23 +113,8 @@ class guide:
         return route
 
     def get_directions(graph, source_location, destination_location):
-        src_y = source_location[0]
-        src_x = source_location[1]
-        dst_y = destination_location[0]
-        dst_x = destination_location[1]
-        src_min_dist = math.inf
-        dst_min_dist = math.inf
-        for node, info in graph.nodes.items():
-            y = info['y']
-            x = info['x']
-            dist = haversine((y, x), (src_y, src_x))
-            if dist < src_min_dist:
-                new_src = node
-                src_min_dist = dist
-            dist2 = haversine((y, x), (dst_y, dst_x))
-            if dist2 < dst_min_dist:
-                new_dst = node
-                dst_min_dist = dist2
+        new_src = ox.geo_utils.get_nearest_node(graph, source_location)
+        new_dst = ox.geo_utils.get_nearest_node(graph, destination_location)
         directions = nx.shortest_path(graph, new_src,
                                       new_dst)
         route = guide._get_route(graph, directions, source_location,
