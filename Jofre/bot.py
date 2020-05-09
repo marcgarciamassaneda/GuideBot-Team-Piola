@@ -58,13 +58,18 @@ def author(update, context):
 
 
 def go(update, context):
-    destination_name = ' '.join(context.args) + ', Girona, Gironès'
+    destination_name = ' '.join(context.args)
     destination = ox.geo_utils.geocode(destination_name)
     route = guide.get_directions(graph, (lat, lon), destination)
     guide.plot_directions(graph, (lat, lon), destination, route, 'fitxer.png')
     context.bot.send_photo(chat_id=update.effective_chat.id,
                            photo=open('fitxer.png', 'rb'))
     os.remove('fitxer.PNG')
+    mid_lat = route[0]['mid'][0]
+    mid_lon = route[0]['mid'][1]
+    mid_name = route[0]['next_name']
+    message = "You are at %s, %s \nStart at checkpoint #1: %s, %s %s" % (lat, lon, mid_lat, mid_lon, mid_name)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
 def where(update, context):
@@ -93,6 +98,7 @@ def where(update, context):
 
 def cancel(update, context):
     print()
+
 
 # declara una constant amb el access token que llegeix de token.txt
 TOKEN = open('token.txt').read().strip()
