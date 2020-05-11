@@ -141,6 +141,28 @@ class guide:
         mapa.add_line(Line(first_line_coordinates, 'blue', 4))
         imatge = mapa.render()
         imatge.save(filename)
+        return mapa
+
+    def _mark_edge(mapa, directions, node, filename):
+        coordinates_first = (directions[node]['src'][1], directions[node]['src'][0])
+        coordinates_second = (directions[node]['mid'][1], directions[node]['mid'][0])
+        coordinates = (coordinates_first, coordinates_second)
+        mapa.add_line(Line(coordinates, 'green', 4))
+        if (node != len(directions)-1):
+            mapa.add_marker(CircleMarker(coordinates_second, 'green', 10))
+        imatge = mapa.render()
+        imatge.save(filename)
+        return mapa
+
+    def _go_particular_case(route, node, destination_name):
+        if node == len(route)-2:
+            mid_lat = route[node]['dst'][0]
+            mid_lon = route[node]['dst'][1]
+            message = "Go to your destination: %s, %s (%s)." % (mid_lat, mid_lon, destination_name)
+            return message
+        if node == len(route)-1:
+            message = "Congratulations! You have reached your destination: %s.\n🏁🏁🏁" % (destination_name)
+            return message
 
     def yolo(graph):
         # for each node and its information...

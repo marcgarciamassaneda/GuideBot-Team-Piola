@@ -62,19 +62,18 @@ def go(update, context):
     destination_name = ' '.join(context.args) + ', Girona, Gironès'
     destination = ox.geo_utils.geocode(destination_name)
     route = guide.get_directions(graph, (lat, lon), destination)
-    guide.plot_directions(graph, (lat, lon), destination, route, 'fitxer.png')
+    mapa = guide.plot_directions(graph, (lat, lon), destination, route, 'fitxer.png')
     context.bot.send_photo(chat_id=update.effective_chat.id,
                            photo=open('fitxer.png', 'rb'))
-    os.remove('fitxer.PNG')
     mid_lat = route[0]['mid'][0]
     mid_lon = route[0]['mid'][1]
     mid_name = route[0]['next_name']
     message = "You are at %s, %s \nStart at checkpoint #1: %s, %s (%s)" % (lat, lon, mid_lat, mid_lon, mid_name)
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
     n = 0
-    while n < len(route):
+    while n < len(route) - 2:
         #while haversine((lat, lon), (route[n]['mid'][0], route[n]['mid'][1])) > 1:
-         #   None
+        #   None
         n += 1
         mid_lat = route[n]['mid'][0]
         mid_lon = route[n]['mid'][1]
@@ -83,9 +82,31 @@ def go(update, context):
         distance = route[n]['length']
         angle = route[n-1]['angle']
         message = "Well done: You have reached checkpoint #%s!\nYou are at %s, %s" % (n, lat, lon)
-        message2 = "Go to checkpoint #%s: %s, %s (%s)\n %s %s %s meters." % (n+1, mid_lat, mid_lon, next_name, guide._get_angle(angle), current_name, distance)
+        message2 = "Go to checkpoint #%s: %s, %s (%s)\n%s %s %s meters." % (n+1, mid_lat, mid_lon, next_name, guide._get_angle(angle), current_name, distance)
+        mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        context.bot.send_photo(chat_id=update.effective_chat.id,
+                               photo=open('fitxer.png', 'rb'))
         context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
+    final_message1 = "Well done: You have reached checkpoint #%s, the last checkpoint!\nYou are at %s, %s" % (len(route)-1, lat, lon)
+    final_message1_2 = guide._go_particular_case(route, len(route)-2, destination_name)
+    final_message2 = guide._go_particular_case(route, len(route)-1, destination_name)
+    # while haversine((lat, lon), (route[len(route)-2]['mid'][0], route[len(route)-2]['mid'][1])) > 1:
+    # None
+    n += 1
+    mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1)
+    context.bot.send_photo(chat_id=update.effective_chat.id,
+                           photo=open('fitxer.png', 'rb'))
+    context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1_2)
+    # while haversine((lat, lon), (route[len(route)-1]['mid'][0], route[len(route)-1]['mid'][1])) > 1:
+    # None
+    n += 1
+    mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+    context.bot.send_message(chat_id=update.effective_chat.id, text=final_message2)
+    context.bot.send_photo(chat_id=update.effective_chat.id,
+                           photo=open('fitxer.png', 'rb'))
+    os.remove('fitxer.png')
 
 
 def where(update, context):
