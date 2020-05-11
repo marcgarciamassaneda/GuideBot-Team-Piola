@@ -2,6 +2,7 @@ import telegram.ext as telegram
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 from guide import guide
 import osmnx as ox
+from haversine import haversine
 from staticmap import StaticMap, CircleMarker
 import random
 import os
@@ -59,7 +60,7 @@ def author(update, context):
 
 def go(update, context):
     destination_name = ' '.join(context.args)
-    destination = ox.geo_utils.geocode(destination_name)
+    destination = ox.geo_utils.geocode(destination_name + ', Girona')
     route = guide.get_directions(graph, (lat, lon), destination)
     guide.plot_directions(graph, (lat, lon), destination, route, 'fitxer.png')
     context.bot.send_photo(chat_id=update.effective_chat.id,
@@ -70,6 +71,30 @@ def go(update, context):
     mid_name = route[0]['next_name']
     message = "You are at %s, %s \nStart at checkpoint #1: %s, %s (%s)" % (lat, lon, mid_lat, mid_lon, mid_name)
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+    n = 0
+    while n < len(route)-2:
+        # while haversine((lat, lon), (route[n]['mid'][0], route[n]['mid'][1])) > 1:
+        #   None
+        n += 1
+        mid_lat = route[n]['mid'][0]
+        mid_lon = route[n]['mid'][1]
+        next_name = route[n]['next_name']
+        current_name = route[n]['current_name']
+        distance = route[n]['length']
+        angle = route[n-1]['angle']
+        message = "Well done: You have reached checkpoint #%s!\nYou are at %s, %s" % (n, lat, lon)
+        message2 = "Go to checkpoint #%s: %s, %s (%s)\n%s %s %s meters." % (n+1, mid_lat, mid_lon, next_name, guide._get_angle(angle), current_name, distance)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
+
+    final_message1 = guide._go_particular_case(route, len(route)-2, lat, lon, destination_name)
+    final_message2 = guide._go_particular_case(route, len(route)-1, lat, lon, destination_name)
+    # while haversine((lat, lon), (route[len(route)-2]['mid'][0], route[len(route)-2]['mid'][1])) > 1:
+    # None
+    context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1)
+    # while haversine((lat, lon), (route[len(route)-1]['mid'][0], route[len(route)-1]['mid'][1])) > 1:
+    # None
+    context.bot.send_message(chat_id=update.effective_chat.id, text=final_message2)
 
 
 def where(update, context):
