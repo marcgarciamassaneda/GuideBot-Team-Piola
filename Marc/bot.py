@@ -8,17 +8,17 @@ import random
 import os
 
 # variables globals que indiquen la posició actual de l'usuari
-lat, lon = None, None
-graph = guide.load_graph("Girona")
+lat, lon = 41.40674136015038, 2.1738860390977446
+graph = guide.load_graph("Barcelona")
 
 
-def _current_location(update, context):
-    '''aquesta funció es crida cada cop que arriba una nova
-       localització d'un usuari'''
-    message = update.edited_message if update.edited_message else update.message
-    global lat
-    global lon
-    lat, lon = message.location.latitude, message.location.longitude
+#def _current_location(update, context):
+'''aquesta funció es crida cada cop que arriba una nova
+   localització d'un usuari'''
+'''message = update.edited_message if update.edited_message else update.message
+global lat
+global lon
+lat, lon = message.location.latitude, message.location.longitude'''
 
 
 # defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
@@ -59,9 +59,10 @@ def author(update, context):
 
 
 def go(update, context):
-    destination_name = ' '.join(context.args) + ', Girona, Gironès'
-    destination = ox.geo_utils.geocode(destination_name)
+    destination_name = ' '.join(context.args)
+    destination = ox.geo_utils.geocode(destination_name) #+ ', Girona, Gironès')
     route = guide.get_directions(graph, (lat, lon), destination)
+    print(route)
     mapa = guide.plot_directions(graph, (lat, lon), destination, route, 'fitxer.png')
     context.bot.send_photo(chat_id=update.effective_chat.id,
                            photo=open('fitxer.png', 'rb'))
@@ -79,7 +80,11 @@ def go(update, context):
         mid_lon = route[n]['mid'][1]
         next_name = route[n]['next_name']
         current_name = route[n]['current_name']
-        distance = route[n]['length']
+        if next_name == None:
+            next_name = "Unknown"
+        if current_name == None:
+            current_name = "Unknown"
+        distance = guide._my_round(route[n]['length'])
         angle = route[n-1]['angle']
         message = "Well done: You have reached checkpoint #%s!\nYou are at %s, %s" % (n, lat, lon)
         message2 = "Go to checkpoint #%s: %s, %s (%s)\n%s %s %s meters." % (n+1, mid_lat, mid_lon, next_name, guide._get_angle(angle), current_name, distance)
@@ -151,8 +156,8 @@ dispatcher.add_handler(telegram.CommandHandler('author', author))
 
 dispatcher.add_handler(telegram.CommandHandler('cancel', cancel))
 dispatcher.add_handler(telegram.CommandHandler('where', where))
-dispatcher.add_handler(telegram.MessageHandler(telegram.Filters.location,
-                                               _current_location))
+#dispatcher.add_handler(telegram.MessageHandler(telegram.Filters.location,
+#                                               _current_location))
 dispatcher.add_handler(telegram.CommandHandler('go', go))
 # engega el bot
 updater.start_polling()

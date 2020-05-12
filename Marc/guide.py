@@ -51,6 +51,13 @@ class guide:
         else:
             return "Turn half left and go straight through"
 
+    def _my_round(x, base=5):
+        if (x < 1):
+            return 1
+        if (x < 10):
+            return round(x)
+        return base * round(x/base)
+
     def _route_particular_case(graph, directions, node, source_location,
                                destination_location):
         node_info = dict.fromkeys(['angle', 'current_name', 'dst', 'length',
@@ -66,6 +73,8 @@ class guide:
             node_info['length'] = None
             next_edge = graph.adj[directions[0]][directions[1]][0]
             node_info['next_name'] = next_edge['name']
+            if isinstance(node_info['next_name'], list):
+                node_info['next_name'] = node_info['next_name'][0]
         if node == len(directions) - 2:
             node_info['src'] = (graph.nodes[directions[node]]['y'],
                                 graph.nodes[directions[node]]['x'])
@@ -77,6 +86,8 @@ class guide:
             node_info['current_name'] = edge['name']
             node_info['length'] = edge['length']
             node_info['next_name'] = None
+            if isinstance(node_info['current_name'], list):
+                node_info['current_name'] = node_info['current_name'][0]
         if node == len(directions) - 1:
             node_info['src'] = (graph.nodes[directions[node]]['y'],
                                 graph.nodes[directions[node]]['x'])
@@ -105,6 +116,10 @@ class guide:
             next_edge = graph.adj[directions[i+1]][directions[i+2]][0]
             node_info['next_name'] = next_edge['name']
             node_info['angle'] = next_edge['bearing'] - edge['bearing']
+            if isinstance(node_info['current_name'], list):
+                node_info['current_name'] = node_info['current_name'][0]
+            if isinstance(node_info['next_name'], list):
+                node_info['next_name'] = node_info['next_name'][0]
             route.append(node_info)
         route.insert(0, guide._route_particular_case(graph, directions, 0,
                      source_location, destination_location))
