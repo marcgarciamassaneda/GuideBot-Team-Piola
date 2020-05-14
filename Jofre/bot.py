@@ -3,22 +3,21 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup
 from guide import guide
 import osmnx as ox
 from haversine import haversine
-from staticmap import StaticMap, CircleMarker
+from staticmap import StaticMap, CircleMarker, Line
 import random
 import os
 
-# variables globals que indiquen la posició actual de l'usuari
-lat, lon = None, None
-graph = guide.load_graph("Girona")
+
+graph = guide.load_graph("Canet")
 
 
 def _current_location(update, context):
     '''aquesta funció es crida cada cop que arriba una nova
        localització d'un usuari'''
     message = update.edited_message if update.edited_message else update.message
-    global lat
-    global lon
+    chat_id = update.effective_chat.id
     lat, lon = message.location.latitude, message.location.longitude
+    context.user_data[chat_id] = (lat, lon)
 
 
 # defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
@@ -34,7 +33,7 @@ def start(update, context):
 def help(update, context):
     message = "I can be your captain and help you go wherever you want!👨‍✈️\nJust type the following commands:"
     command1 = "/start - starts de conversation."
-    command2 = "/help - offers help abput the available commands."
+    command2 = "/help - offers help about the available commands."
     command3 = '/author - shows information about the authors of the project.'
     command4 = "/go destí - begins to guide the user to get from their current position tho the chosen destination point."
     example4 = "<i>For example: /go Campus Nord.</i>"
@@ -58,47 +57,113 @@ def author(update, context):
                            photo=open('authors.JPG', 'rb'))
 
 
-def go(update, context):
-    destination_name = ' '.join(context.args)
-    destination = ox.geo_utils.geocode(destination_name + ', Girona')
-    route = guide.get_directions(graph, (lat, lon), destination)
-    guide.plot_directions(graph, (lat, lon), destination, route, 'fitxer.png')
-    context.bot.send_photo(chat_id=update.effective_chat.id,
-                           photo=open('fitxer.png', 'rb'))
-    os.remove('fitxer.PNG')
-    mid_lat = route[0]['mid'][0]
-    mid_lon = route[0]['mid'][1]
-    mid_name = route[0]['next_name']
-    message = "You are at %s, %s \nStart at checkpoint #1: %s, %s (%s)" % (lat, lon, mid_lat, mid_lon, mid_name)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-    n = 0
-    while n < len(route)-2:
-        # while haversine((lat, lon), (route[n]['mid'][0], route[n]['mid'][1])) > 1:
-        #   None
-        n += 1
-        mid_lat = route[n]['mid'][0]
-        mid_lon = route[n]['mid'][1]
-        next_name = route[n]['next_name']
-        current_name = route[n]['current_name']
-        distance = route[n]['length']
-        angle = route[n-1]['angle']
-        message = "Well done: You have reached checkpoint #%s!\nYou are at %s, %s" % (n, lat, lon)
-        message2 = "Go to checkpoint #%s: %s, %s (%s)\n%s %s %s meters." % (n+1, mid_lat, mid_lon, next_name, guide._get_angle(angle), current_name, distance)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
+def _mark_edge(mapa, directions, node, filename):
+    coordinates_first = (directions[node]['src'][1], directions[node]['src'][0])
+    coordinates_second = (directions[node]['mid'][1], directions[node]['mid'][0])
+    coordinates = (coordinates_first, coordinates_second)
+    mapa.add_line(Line(coordinates, 'green', 4))
+    if (node != len(directions)-1):
+        mapa.add_marker(CircleMarker(coordinates_second, 'green', 10))
+    imatge = mapa.render()
+    imatge.save(filename)
+    return mapa
 
-    final_message1 = guide._go_particular_case(route, len(route)-2, lat, lon, destination_name)
-    final_message2 = guide._go_particular_case(route, len(route)-1, lat, lon, destination_name)
-    # while haversine((lat, lon), (route[len(route)-2]['mid'][0], route[len(route)-2]['mid'][1])) > 1:
-    # None
-    context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1)
-    # while haversine((lat, lon), (route[len(route)-1]['mid'][0], route[len(route)-1]['mid'][1])) > 1:
-    # None
-    context.bot.send_message(chat_id=update.effective_chat.id, text=final_message2)
+
+def _my_round(x, base=5):
+    if (x < 1):
+        return 1
+    if (x < 10):
+        return round(x)
+    return base * round(x/base)
+
+
+def _go_particular_case(route, node, destination_name):
+    if node == len(route)-2:
+        mid_lat = route[node]['dst'][0]
+        mid_lon = route[node]['dst'][1]
+        message = "Go to your destination: %s, %s (%s)." % (mid_lat, mid_lon, destination_name)
+        return message
+    if node == len(route)-1:
+        message = "Congratulations! You have reached your destination: %s.\n🏁🏁🏁" % (destination_name)
+        return message
+
+
+def go(update, context):
+    try:
+        chat_id = update.effective_chat.id
+        lat = context.user_data[chat_id][0]
+        lon = context.user_data[chat_id][1]
+        global active_guidance
+        active_guidance = True
+        destination_name = ' '.join(context.args)
+        destination = ox.geo_utils.geocode(destination_name + ', Canet de Mar')
+        route = guide.get_directions(graph, (lat, lon), destination)
+        mapa = guide.plot_directions(graph, (lat, lon), destination, route, 'fitxer.png')
+        context.bot.send_photo(chat_id=update.effective_chat.id,
+                               photo=open('fitxer.png', 'rb'))
+        mid_lat = route[0]['mid'][0]
+        mid_lon = route[0]['mid'][1]
+        mid_name = route[0]['next_name']
+        message = "You are at %s, %s \nStart at checkpoint #1: %s, %s (%s)" % (lat, lon, mid_lat, mid_lon, mid_name)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+        n = 0
+        while (n < len(route) - 2) and active_guidance:
+            # while haversine((lat, lon), (route[n]['mid'][0], route[n]['mid'][1])) > 1:
+            #   None
+            n += 1
+            mid_lat = route[n]['mid'][0]
+            mid_lon = route[n]['mid'][1]
+            next_name = route[n]['next_name']
+            current_name = route[n]['current_name']
+            if next_name == None:
+                next_name = "Unknown"
+            if current_name == None:
+                current_name = "Unknown"
+            distance = guide._my_round(route[n]['length'])
+            angle = route[n-1]['angle']
+            message = "Well done: You have reached checkpoint #%s!\nYou are at %s, %s" % (n, lat, lon)
+            message2 = "Go to checkpoint #%s: %s, %s (%s)\n%s %s %s meters." % (n+1, mid_lat, mid_lon, next_name, guide._get_angle(angle), current_name, distance)
+            mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+            context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+            context.bot.send_photo(chat_id=update.effective_chat.id,
+                                   photo=open('fitxer.png', 'rb'))
+            context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
+        if active_guidance:
+            final_message1 = "Well done: You have reached checkpoint #%s, the last checkpoint!\nYou are at %s, %s" % (len(route)-1, lat, lon)
+            final_message1_2 = guide._go_particular_case(route, len(route)-2, destination_name)
+            final_message2 = guide._go_particular_case(route, len(route)-1, destination_name)
+            # while haversine((lat, lon), (route[len(route)-2]['mid'][0], route[len(route)-2]['mid'][1])) > 1:
+            # None
+            n += 1
+            mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+            context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1)
+            context.bot.send_photo(chat_id=update.effective_chat.id,
+                                   photo=open('fitxer.png', 'rb'))
+            context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1_2)
+            # while haversine((lat, lon), (route[len(route)-1]['mid'][0], route[len(route)-1]['mid'][1])) > 1:
+            # None
+            n += 1
+            mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+            context.bot.send_message(chat_id=update.effective_chat.id, text=final_message2)
+            context.bot.send_photo(chat_id=update.effective_chat.id,
+                                   photo=open('fitxer.png', 'rb'))
+            os.remove('fitxer.png')
+    except KeyError:
+        location_keyboard = KeyboardButton(text="Send location 📍",
+                                           request_location=True)
+        cancel_keyboard = KeyboardButton('Cancel')
+        custom_keyboard = [[location_keyboard, cancel_keyboard]]
+        reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+        update.message.reply_text(
+                    "Please, send me your current location first.",
+                    reply_markup=reply_markup)
 
 
 def where(update, context):
-    if lat is not None and lon is not None:
+    try:
+        chat_id = update.effective_chat.id
+        lat = context.user_data[chat_id][0]
+        lon = context.user_data[chat_id][1]
         # envia la localització al xat del client
         text = "You are at the coordinates %s, %s" % (lat, lon)
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -110,19 +175,27 @@ def where(update, context):
         context.bot.send_photo(chat_id=update.effective_chat.id,
                                photo=open(fitxer, 'rb'))
         os.remove(fitxer)
-    else:
+    except KeyError:
         location_keyboard = KeyboardButton(text="Send location 📍",
                                            request_location=True)
         cancel_keyboard = KeyboardButton('Cancel')
         custom_keyboard = [[location_keyboard, cancel_keyboard]]
         reply_markup = ReplyKeyboardMarkup(custom_keyboard)
         update.message.reply_text(
-                    "Please, send me your current location.",
+                    "Please, send me your current location first.",
                     reply_markup=reply_markup)
 
 
 def cancel(update, context):
-    print()
+    """if active_guidance:
+        active_guidance = False
+        text = "The guidance system has been canceled successfully.\n✅"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+    else:
+        text = "The guidance system has not been activated yet."
+        text2 = "Please use the /help command to get help."
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text2)"""
 
 
 # declara una constant amb el access token que llegeix de token.txt
