@@ -93,8 +93,6 @@ def go(update, context):
         chat_id = update.effective_chat.id
         lat = context.user_data[chat_id][0]
         lon = context.user_data[chat_id][1]
-        global active_guidance
-        active_guidance = True
         destination_name = ' '.join(context.args)
         destination = ox.geo_utils.geocode(destination_name + ', Canet de Mar')
         route = guide.get_directions(graph, (lat, lon), destination)
@@ -107,7 +105,7 @@ def go(update, context):
         message = "You are at %s, %s \nStart at checkpoint #1: %s, %s (%s)" % (lat, lon, mid_lat, mid_lon, mid_name)
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
         n = 0
-        while (n < len(route) - 2) and active_guidance:
+        while (n < len(route) - 2):
             # while haversine((lat, lon), (route[n]['mid'][0], route[n]['mid'][1])) > 1:
             #   None
             n += 1
@@ -127,27 +125,26 @@ def go(update, context):
             context.bot.send_message(chat_id=update.effective_chat.id, text=message)
             context.bot.send_photo(chat_id=update.effective_chat.id,
                                    photo=open('fitxer.png', 'rb'))
-            context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
-        if active_guidance:
-            final_message1 = "Well done: You have reached checkpoint #%s, the last checkpoint!\nYou are at %s, %s" % (len(route)-1, lat, lon)
-            final_message1_2 = guide._go_particular_case(route, len(route)-2, destination_name)
-            final_message2 = guide._go_particular_case(route, len(route)-1, destination_name)
-            # while haversine((lat, lon), (route[len(route)-2]['mid'][0], route[len(route)-2]['mid'][1])) > 1:
-            # None
-            n += 1
-            mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
-            context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1)
-            context.bot.send_photo(chat_id=update.effective_chat.id,
-                                   photo=open('fitxer.png', 'rb'))
-            context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1_2)
-            # while haversine((lat, lon), (route[len(route)-1]['mid'][0], route[len(route)-1]['mid'][1])) > 1:
-            # None
-            n += 1
-            mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
-            context.bot.send_message(chat_id=update.effective_chat.id, text=final_message2)
-            context.bot.send_photo(chat_id=update.effective_chat.id,
-                                   photo=open('fitxer.png', 'rb'))
-            os.remove('fitxer.png')
+            context.bot.send_message(chat_id=update.effective_chat.id, text=message2) 
+        final_message1 = "Well done: You have reached checkpoint #%s, the last checkpoint!\nYou are at %s, %s" % (len(route)-1, lat, lon)
+        final_message1_2 = guide._go_particular_case(route, len(route)-2, destination_name)
+        final_message2 = guide._go_particular_case(route, len(route)-1, destination_name)
+        # while haversine((lat, lon), (route[len(route)-2]['mid'][0], route[len(route)-2]['mid'][1])) > 1:
+        # None
+        n += 1
+        mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+        context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1)
+        context.bot.send_photo(chat_id=update.effective_chat.id,
+                               photo=open('fitxer.png', 'rb'))
+        context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1_2)
+        # while haversine((lat, lon), (route[len(route)-1]['mid'][0], route[len(route)-1]['mid'][1])) > 1:
+        # None
+        n += 1
+        mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+        context.bot.send_message(chat_id=update.effective_chat.id, text=final_message2)
+        context.bot.send_photo(chat_id=update.effective_chat.id,
+                               photo=open('fitxer.png', 'rb'))
+        os.remove('fitxer.png')
     except KeyError:
         location_keyboard = KeyboardButton(text="Send location 📍",
                                            request_location=True)
