@@ -86,6 +86,27 @@ def _my_round(x, base=5):
     return base * round(x/base)
 
 
+def _get_angle(angle):
+    if angle is None:
+        return "Go straight through"
+    if angle < 0:
+        angle += 360
+    if angle < 22.5 or angle > 337.5:
+        return "Go straight through"
+    elif angle < 67.5:
+        return "Turn half right and go straight through"
+    elif angle < 112.5:
+        return "Turn right and go straight through"
+    elif angle < 180:
+        return "Turn strong right and go straight through"
+    elif angle < 247.5:
+        return "Turn strong left and go straight through"
+    elif angle < 292.5:
+        return "Turn left and go straight through"
+    else:
+        return "Turn half left and go straight through"
+
+
 def _go_particular_case(route, node, destination_name):
     if node == len(route)-2:
         mid_lat = route[node]['dst'][0]
