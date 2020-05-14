@@ -29,34 +29,19 @@ class guide:
         return graph
 
     def print_graph(graph):
-        ox.plot_graph(graph)
-
-    def _get_angle(angle):
-        if angle is None:
-            return "Go straight through"
-        if angle < 0:
-            angle += 360
-        if angle < 22.5 or angle > 337.5:
-            return "Go straight through"
-        elif angle < 67.5:
-            return "Turn half right and go straight through"
-        elif angle < 112.5:
-            return "Turn right and go straight through"
-        elif angle < 180:
-            return "Turn strong right and go straight through"
-        elif angle < 247.5:
-            return "Turn strong left and go straight through"
-        elif angle < 292.5:
-            return "Turn left and go straight through"
-        else:
-            return "Turn half left and go straight through"
-
-    def _my_round(x, base=5):
-        if (x < 1):
-            return 1
-        if (x < 10):
-            return round(x)
-        return base * round(x/base)
+        # for each node and its information...
+        for node1, info1 in graph.nodes.items():
+            print("Node:", node1, info1, "\nEdges:")
+            # for each adjacent node and its information...
+            for node2, info2 in graph.adj[node1].items():
+                print('    ', node2)
+                # osmnx graphs are multigraphs, but we will just consider their first edge
+                edge = info2[0]
+                # we remove geometry information from edges because we don't need it and take a lot of space
+                if 'geometry' in edge:
+                    del(edge['geometry'])
+                print('        ', edge)
+            print("\n")
 
     def _route_particular_case(graph, directions, node, source_location,
                                destination_location):
@@ -157,38 +142,3 @@ class guide:
         imatge = mapa.render()
         imatge.save(filename)
         return mapa
-
-    def _mark_edge(mapa, directions, node, filename):
-        coordinates_first = (directions[node]['src'][1], directions[node]['src'][0])
-        coordinates_second = (directions[node]['mid'][1], directions[node]['mid'][0])
-        coordinates = (coordinates_first, coordinates_second)
-        mapa.add_line(Line(coordinates, 'green', 4))
-        if (node != len(directions)-1):
-            mapa.add_marker(CircleMarker(coordinates_second, 'green', 10))
-        imatge = mapa.render()
-        imatge.save(filename)
-        return mapa
-
-    def _go_particular_case(route, node, destination_name):
-        if node == len(route)-2:
-            mid_lat = route[node]['dst'][0]
-            mid_lon = route[node]['dst'][1]
-            message = "Go to your destination: %s, %s (%s)." % (mid_lat, mid_lon, destination_name)
-            return message
-        if node == len(route)-1:
-            message = "Congratulations! You have reached your destination: %s.\n🏁🏁🏁" % (destination_name)
-            return message
-
-    def yolo(graph):
-        # for each node and its information...
-        for node1, info1 in graph.nodes.items():
-            print(node1, info1)
-            # for each adjacent node and its information...
-            for node2, info2 in graph.adj[node1].items():
-                print('    ', node2)
-                # osmnx graphs are multigraphs, but we will just consider their first edge
-                edge = info2[0]
-                # we remove geometry information from edges because we don't need it and take a lot of space
-                if 'geometry' in edge:
-                    del(edge['geometry'])
-                print('        ', edge)
