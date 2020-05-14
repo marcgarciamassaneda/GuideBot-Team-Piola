@@ -8,7 +8,16 @@ import random
 import os
 
 
-graph = guide.load_graph("Canet")
+def _fixed_graph():
+    try:
+        return guide.load_graph("Canet")
+    except FileNotFoundError:
+        Canet = guide.download_graph("Canet de Mar")
+        guide.save_graph(Canet, "Canet")
+        return guide.load_graph("Canet")
+
+
+graph = _fixed_graph()
 
 
 def _current_location(update, context):
@@ -113,9 +122,9 @@ def go(update, context):
             mid_lon = route[n]['mid'][1]
             next_name = route[n]['next_name']
             current_name = route[n]['current_name']
-            if next_name == None:
+            if next_name is None:
                 next_name = "Unknown"
-            if current_name == None:
+            if current_name is None:
                 current_name = "Unknown"
             distance = guide._my_round(route[n]['length'])
             angle = route[n-1]['angle']
@@ -125,7 +134,7 @@ def go(update, context):
             context.bot.send_message(chat_id=update.effective_chat.id, text=message)
             context.bot.send_photo(chat_id=update.effective_chat.id,
                                    photo=open('fitxer.png', 'rb'))
-            context.bot.send_message(chat_id=update.effective_chat.id, text=message2) 
+            context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
         final_message1 = "Well done: You have reached checkpoint #%s, the last checkpoint!\nYou are at %s, %s" % (len(route)-1, lat, lon)
         final_message1_2 = guide._go_particular_case(route, len(route)-2, destination_name)
         final_message2 = guide._go_particular_case(route, len(route)-1, destination_name)
