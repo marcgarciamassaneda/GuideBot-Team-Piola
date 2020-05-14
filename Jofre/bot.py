@@ -147,22 +147,22 @@ def go(update, context):
                 next_name = "Unknown"
             if current_name is None:
                 current_name = "Unknown"
-            distance = guide._my_round(route[n]['length'])
+            distance = _my_round(route[n]['length'])
             angle = route[n-1]['angle']
             message = "Well done: You have reached checkpoint #%s!\nYou are at %s, %s" % (n, lat, lon)
-            message2 = "Go to checkpoint #%s: %s, %s (%s)\n%s %s %s meters." % (n+1, mid_lat, mid_lon, next_name, guide._get_angle(angle), current_name, distance)
-            mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+            message2 = "Go to checkpoint #%s: %s, %s (%s)\n%s %s %s meters." % (n+1, mid_lat, mid_lon, next_name, _get_angle(angle), current_name, distance)
+            mapa = _mark_edge(mapa, route, n-1, 'fitxer.png')
             context.bot.send_message(chat_id=update.effective_chat.id, text=message)
             context.bot.send_photo(chat_id=update.effective_chat.id,
                                    photo=open('fitxer.png', 'rb'))
             context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
         final_message1 = "Well done: You have reached checkpoint #%s, the last checkpoint!\nYou are at %s, %s" % (len(route)-1, lat, lon)
-        final_message1_2 = guide._go_particular_case(route, len(route)-2, destination_name)
-        final_message2 = guide._go_particular_case(route, len(route)-1, destination_name)
+        final_message1_2 = _go_particular_case(route, len(route)-2, destination_name)
+        final_message2 = _go_particular_case(route, len(route)-1, destination_name)
         # while haversine((lat, lon), (route[len(route)-2]['mid'][0], route[len(route)-2]['mid'][1])) > 1:
         # None
         n += 1
-        mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+        mapa = _mark_edge(mapa, route, n-1, 'fitxer.png')
         context.bot.send_message(chat_id=update.effective_chat.id, text=final_message1)
         context.bot.send_photo(chat_id=update.effective_chat.id,
                                photo=open('fitxer.png', 'rb'))
@@ -170,7 +170,7 @@ def go(update, context):
         # while haversine((lat, lon), (route[len(route)-1]['mid'][0], route[len(route)-1]['mid'][1])) > 1:
         # None
         n += 1
-        mapa = guide._mark_edge(mapa, route, n-1, 'fitxer.png')
+        mapa = _mark_edge(mapa, route, n-1, 'fitxer.png')
         context.bot.send_message(chat_id=update.effective_chat.id, text=final_message2)
         context.bot.send_photo(chat_id=update.effective_chat.id,
                                photo=open('fitxer.png', 'rb'))
