@@ -10,11 +10,11 @@ import os
 
 def _fixed_graph():
     try:
-        return guide.load_graph("Canet")
+        return guide.load_graph("Barcelona")
     except FileNotFoundError:
-        Canet = guide.download_graph("Canet de Mar")
-        guide.save_graph(Canet, "Canet")
-        return guide.load_graph("Canet")
+        Canet = guide.download_graph("Barcelona")
+        guide.save_graph(Canet, "Barcelona")
+        return guide.load_graph("Barcelona")
 
 
 graph = _fixed_graph()
@@ -61,11 +61,15 @@ def _mark_edge(mapa, directions, node, filename):
     coordinates_first = (directions[node]['src'][1], directions[node]['src'][0])
     coordinates_second = (directions[node]['mid'][1], directions[node]['mid'][0])
     coordinates = (coordinates_first, coordinates_second)
+    print('hola', coordinates)
+    mapa = mapa
     mapa.add_line(Line(coordinates, 'green', 4))
+    print('hola')
     if (node != len(directions)-1):
         mapa.add_marker(CircleMarker(coordinates_second, 'green', 10))
     imatge = mapa.render()
     imatge.save(filename)
+    print('hola')
     return mapa
 
 
@@ -160,6 +164,7 @@ def _checkpoint_message(update, context):
     context.bot.send_photo(chat_id=update.effective_chat.id,
                            photo=open('fitxer.png', 'rb'))
     context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
+    context.user_data['mapa'] = mapa
     context.user_data['node'] += 1
 
 
@@ -167,7 +172,7 @@ def _check_distance(context):
     coordinates = context.user_data['coordinates']
     route = context.user_data['route']
     n = context.user_data['node']
-    if haversine(coordinates, (route[n]['mid'][0], route[n]['mid'][1])) < 1:
+    if haversine(coordinates, (route[n-1]['mid'][0], route[n-1]['mid'][1])) < 1:
         return True
     return False
 
@@ -175,9 +180,9 @@ def _check_distance(context):
 def _current_location(update, context):
     '''aquesta funció es crida cada cop que arriba una nova
        localització d'un usuari'''
-    message = update.edited_message if update.edited_message else update.message
-    lat, lon = message.location.latitude, message.location.longitude
-    context.user_data['coordinates'] = (lat, lon)
+    #message = update.edited_message if update.edited_message else update.message
+    #lat, lon = message.location.latitude, message.location.longitude
+    #context.user_data['coordinates'] = (lat, lon)
     if context.user_data['route'] is not None:
         if _check_distance(context):
             n = context.user_data['node']
@@ -203,9 +208,10 @@ def _start_guidance(update, context, destination):
 
 def go(update, context):
     try:
+        context.user_data['coordinates'] = 41.40674136015038, 2.1738860390977446
         coordinates = context.user_data['coordinates']
         destination_name = ' '.join(context.args)
-        destination = ox.geo_utils.geocode(destination_name + ', Canet de Mar')
+        destination = ox.geo_utils.geocode(destination_name + ', Barcelona')
         context.user_data['destination'] = destination
         route = guide.get_directions(graph, coordinates, destination)
         context.user_data['route'] = route
@@ -251,9 +257,12 @@ def where(update, context):
 
 
 def _false_loc(update, context):
-    lat = float(context.args[0])
-    lon = float(context.args[1])
+    route = context.user_data['route']
+    n = context.user_data['node']
+    lat = route[n-1]['mid'][0]
+    lon = route[n-1]['mid'][1]
     context.user_data['coordinates'] = (lat, lon)
+    _current_location(update, context)
 
 
 # declara una constant amb el access token que llegeix de token.txt
