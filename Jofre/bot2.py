@@ -1,8 +1,7 @@
 import telegram.ext as telegram
-from telegram import KeyboardButton, ReplyKeyboardMarkup
 from guide import guide
 import osmnx as ox
-from haversine import haversine
+from haversine import haversine, Unit
 from staticmap import StaticMap, CircleMarker, Line
 import random
 import os
@@ -10,11 +9,11 @@ import os
 
 def _fixed_graph():
     try:
-        return guide.load_graph("Barcelona")
+        return guide.load_graph("Canet")
     except FileNotFoundError:
-        Canet = guide.download_graph("Barcelona")
-        guide.save_graph(Canet, "Barcelona")
-        return guide.load_graph("Barcelona")
+        Canet = guide.download_graph("Canet de Mar")
+        guide.save_graph(Canet, "Canet")
+        return guide.load_graph("Canet")
 
 
 graph = _fixed_graph()
@@ -61,15 +60,11 @@ def _mark_edge(mapa, directions, node, filename):
     coordinates_first = (directions[node]['src'][1], directions[node]['src'][0])
     coordinates_second = (directions[node]['mid'][1], directions[node]['mid'][0])
     coordinates = (coordinates_first, coordinates_second)
-    print('hola', coordinates)
-    mapa = mapa
     mapa.add_line(Line(coordinates, 'green', 4))
-    print('hola')
     if (node != len(directions)-1):
         mapa.add_marker(CircleMarker(coordinates_second, 'green', 10))
     imatge = mapa.render()
     imatge.save(filename)
-    print('hola')
     return mapa
 
 
@@ -121,9 +116,9 @@ def _particular_checkpoint_message(update, context):
     mapa = context.user_data['mapa']
     n = context.user_data['node']
     destination = context.user_data['destination']
-    if n == len(route)-2:
-        mid_lat = route[n]['dst'][0]
-        mid_lon = route[n]['dst'][1]
+    if n == len(route)-1:
+        mid_lat = route[n]['mid'][0]
+        mid_lon = route[n]['mid'][1]
         message1 = "Well done: You have reached checkpoint #%s, the last checkpoint!\nYou are at %s, %s" % (len(route)-1, lat, lon)
         message2 = "Go to your destination: %s, %s (%s)." % (mid_lat, mid_lon, destination)
         mapa = _mark_edge(mapa, route, n-1, 'fitxer.png')
@@ -132,13 +127,15 @@ def _particular_checkpoint_message(update, context):
                                photo=open('fitxer.png', 'rb'))
         context.bot.send_message(chat_id=update.effective_chat.id, text=message2)
         context.user_data['node'] += 1
-    if n == len(route)-1:
+        context.user_data['mapa'] = mapa
+    if n == len(route):
         message = "Congratulations! You have reached your destination: %s.\n🏁🏁🏁" % (destination)
         mapa = _mark_edge(mapa, route, n-1, 'fitxer.png')
         context.bot.send_message(chat_id=update.effective_chat.id, text=message)
         context.bot.send_photo(chat_id=update.effective_chat.id,
                                photo=open('fitxer.png', 'rb'))
         os.remove('fitxer.png')
+        context.user_data['route'] = None
 
 
 def _checkpoint_message(update, context):
@@ -168,11 +165,11 @@ def _checkpoint_message(update, context):
     context.user_data['node'] += 1
 
 
-def _check_distance(context):
+def _check_distance(context, update):
     coordinates = context.user_data['coordinates']
     route = context.user_data['route']
     n = context.user_data['node']
-    if haversine(coordinates, (route[n-1]['mid'][0], route[n-1]['mid'][1])) < 1:
+    if haversine(coordinates, (route[n-1]['mid'][0], route[n-1]['mid'][1]), unit=Unit.METERS) < 3:
         return True
     return False
 
@@ -180,14 +177,14 @@ def _check_distance(context):
 def _current_location(update, context):
     '''aquesta funció es crida cada cop que arriba una nova
        localització d'un usuari'''
-    #message = update.edited_message if update.edited_message else update.message
-    #lat, lon = message.location.latitude, message.location.longitude
-    #context.user_data['coordinates'] = (lat, lon)
+    message = update.edited_message if update.edited_message else update.message
+    lat, lon = message.location.latitude, message.location.longitude
+    context.user_data['coordinates'] = (lat, lon)
     if context.user_data['route'] is not None:
-        if _check_distance(context):
+        if _check_distance(context, update):
             n = context.user_data['node']
             route = context.user_data['route']
-            if n == len(route)-2 or n == len(route)-1:
+            if n == len(route)-1 or n == len(route):
                 _particular_checkpoint_message(update, context)
             else:
                 _checkpoint_message(update, context)
@@ -206,13 +203,17 @@ def _start_guidance(update, context, destination):
     context.bot.send_message(chat_id=update.effective_chat.id, text=message)
 
 
+def _location_error(update, context):
+    message = "Please, send me your live location first. 📍"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=message)
+
+
 def go(update, context):
     try:
-        context.user_data['coordinates'] = 41.40674136015038, 2.1738860390977446
         coordinates = context.user_data['coordinates']
         destination_name = ' '.join(context.args)
-        destination = ox.geo_utils.geocode(destination_name + ', Barcelona')
-        context.user_data['destination'] = destination
+        destination = ox.geo_utils.geocode(destination_name + ', Canet de Mar')
+        context.user_data['destination'] = destination_name
         route = guide.get_directions(graph, coordinates, destination)
         context.user_data['route'] = route
         context.user_data['node'] = 1
@@ -220,14 +221,7 @@ def go(update, context):
         context.user_data['mapa'] = mapa
         _start_guidance(update, context, destination)
     except KeyError:
-        location_keyboard = KeyboardButton(text="Send location 📍",
-                                           request_location=True)
-        cancel_keyboard = KeyboardButton('Cancel')
-        custom_keyboard = [[location_keyboard, cancel_keyboard]]
-        reply_markup = ReplyKeyboardMarkup(custom_keyboard)
-        update.message.reply_text(
-                    "Please, send me your current location first.",
-                    reply_markup=reply_markup)
+        _location_error(update, context)
 
 
 def where(update, context):
@@ -246,14 +240,7 @@ def where(update, context):
                                photo=open(fitxer, 'rb'))
         os.remove(fitxer)
     except KeyError:
-        location_keyboard = KeyboardButton(text="Send location 📍",
-                                           request_location=True)
-        cancel_keyboard = KeyboardButton('Cancel')
-        custom_keyboard = [[location_keyboard, cancel_keyboard]]
-        reply_markup = ReplyKeyboardMarkup(custom_keyboard)
-        update.message.reply_text(
-                    "Please, send me your current location first.",
-                    reply_markup=reply_markup)
+        _location_error(update, context)
 
 
 def _false_loc(update, context):
