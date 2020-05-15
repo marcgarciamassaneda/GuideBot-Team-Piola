@@ -99,18 +99,14 @@ def _get_angle(angle):
 
 
 def cancel(update, context):
-    text = "The guidance system has been canceled successfully.\n✅"
-    context.bot.send_message(chat_id=update.effective_chat.id, text=text)
-
-    """if active_guidance:
-        active_guidance = False
+    if context.user_data['route'] is not None:
         text = "The guidance system has been canceled successfully.\n✅"
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
     else:
         text = "The guidance system has not been activated yet."
         text2 = "Please use the /help command to get help."
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=text2)"""
+        context.bot.send_message(chat_id=update.effective_chat.id, text=text2)
 
 
 def _particular_checkpoint_message(update, context):
@@ -276,6 +272,7 @@ dispatcher.add_handler(telegram.CommandHandler('where', where))
 dispatcher.add_handler(telegram.MessageHandler(telegram.Filters.location,
                                                _current_location))
 dispatcher.add_handler(telegram.CommandHandler('go', go))
+dispatcher.add_handler(telegram.CommandHandler('cancel', cancel))
 dispatcher.add_handler(telegram.CommandHandler('fake', _false_loc))
 # engega el bot
 updater.start_polling()
