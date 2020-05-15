@@ -100,6 +100,7 @@ def _get_angle(angle):
 
 def cancel(update, context):
     if context.user_data['route'] is not None:
+        context.user_data['route'] = None
         text = "The guidance system has been canceled successfully.\n✅"
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
     else:
