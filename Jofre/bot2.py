@@ -62,7 +62,6 @@ def _mark_edge(mapa, directions, node, filename):
     coordinates_second = (directions[node]['mid'][1], directions[node]['mid'][0])
     coordinates = (coordinates_first, coordinates_second)
     print('hola', coordinates)
-    mapa = mapa
     mapa.add_line(Line(coordinates, 'green', 4))
     print('hola')
     if (node != len(directions)-1):
