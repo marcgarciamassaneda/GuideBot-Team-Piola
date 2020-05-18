@@ -19,8 +19,10 @@ def _fixed_graph():
 graph = _fixed_graph()
 
 
-# defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
 def start(update, context):
+    """Function that welcomes the user and offers help. It's automatically
+    executed the first time the user begins the chat or when the bot
+    receives the command /start"""
     name = update.effective_chat.first_name
     message1 = "*Hello %s, welcome to GuideBot!\n🧭*" % (name)
     message2 = "Please use the /help command to get help."
@@ -30,6 +32,9 @@ def start(update, context):
 
 
 def help(update, context):
+    """Informative function that shows the available commands to interact with
+    the bot and use its services. It's activated when the bot receives the
+    command /help"""
     message = "I can be your captain and help you go wherever you want!👨‍✈️\nJust type the following commands:"
     command1 = "/start - starts de conversation."
     command2 = "/help - offers help about the available commands."
@@ -177,9 +182,9 @@ def _check_distance(context, update):
 def _current_location(update, context):
     '''aquesta funció es crida cada cop que arriba una nova
        localització d'un usuari'''
-    message = update.edited_message if update.edited_message else update.message
+    """message = update.edited_message if update.edited_message else update.message
     lat, lon = message.location.latitude, message.location.longitude
-    context.user_data['coordinates'] = (lat, lon)
+    context.user_data['coordinates'] = (lat, lon)"""
     if context.user_data['route'] is not None:
         if _check_distance(context, update):
             n = context.user_data['node']
@@ -210,6 +215,7 @@ def _location_error(update, context):
 
 def go(update, context):
     try:
+        context.user_data['coordinates'] = (41.5901259, 2.5813434)
         coordinates = context.user_data['coordinates']
         destination_name = ' '.join(context.args)
         destination = ox.geo_utils.geocode(destination_name + ', Canet de Mar')
