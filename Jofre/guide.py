@@ -29,27 +29,19 @@ class guide:
         return graph
 
     def print_graph(graph):
-        ox.plot_graph(graph)
-
-    def _get_angle(angle):
-        if angle is None:
-            return "Go straight through"
-        if angle < 0:
-            angle += 360
-        if angle < 22.5 or angle > 337.5:
-            return "Go straight through"
-        elif angle < 67.5:
-            return "Turn half right and go straight through"
-        elif angle < 112.5:
-            return "Turn right and go straight through"
-        elif angle < 180:
-            return "Turn strong right and go straight through"
-        elif angle < 247.5:
-            return "Turn strong left and go straight through"
-        elif angle < 292.5:
-            return "Turn left and go straight through"
-        else:
-            return "Turn half left and go straight through"
+        # for each node and its information...
+        for node1, info1 in graph.nodes.items():
+            print("Node:", node1, info1, "\nEdges:")
+            # for each adjacent node and its information...
+            for node2, info2 in graph.adj[node1].items():
+                print('    ', node2)
+                # osmnx graphs are multigraphs, but we will just consider their first edge
+                edge = info2[0]
+                # we remove geometry information from edges because we don't need it and take a lot of space
+                if 'geometry' in edge:
+                    del(edge['geometry'])
+                print('        ', edge)
+            print("\n")
 
     def _route_particular_case(graph, directions, node, source_location,
                                destination_location):
@@ -66,6 +58,8 @@ class guide:
             node_info['length'] = None
             next_edge = graph.adj[directions[0]][directions[1]][0]
             node_info['next_name'] = next_edge['name']
+            if isinstance(node_info['next_name'], list):
+                node_info['next_name'] = node_info['next_name'][0]
         if node == len(directions) - 2:
             node_info['src'] = (graph.nodes[directions[node]]['y'],
                                 graph.nodes[directions[node]]['x'])
@@ -77,6 +71,8 @@ class guide:
             node_info['current_name'] = edge['name']
             node_info['length'] = edge['length']
             node_info['next_name'] = None
+            if isinstance(node_info['current_name'], list):
+                node_info['current_name'] = node_info['current_name'][0]
         if node == len(directions) - 1:
             node_info['src'] = (graph.nodes[directions[node]]['y'],
                                 graph.nodes[directions[node]]['x'])
@@ -105,6 +101,10 @@ class guide:
             next_edge = graph.adj[directions[i+1]][directions[i+2]][0]
             node_info['next_name'] = next_edge['name']
             node_info['angle'] = next_edge['bearing'] - edge['bearing']
+            if isinstance(node_info['current_name'], list):
+                node_info['current_name'] = node_info['current_name'][0]
+            if isinstance(node_info['next_name'], list):
+                node_info['next_name'] = node_info['next_name'][0]
             route.append(node_info)
         route.insert(0, guide._route_particular_case(graph, directions, 0,
                      source_location, destination_location))
@@ -141,30 +141,4 @@ class guide:
         mapa.add_line(Line(first_line_coordinates, 'blue', 4))
         imatge = mapa.render()
         imatge.save(filename)
-
-    def _go_particular_case(route, node, lat, lon, destination_name):
-        if node == len(route)-2:
-            mid_lat = route[node]['mid'][0]
-            mid_lon = route[node]['mid'][1]
-            current_name = route[node]['current_name']
-            distance = route[node]['length']
-            angle = route[node-1]['angle']
-            message = "Well done: You have reached checkpoint #%s, the last checkpoint!\nYou are at %s, %s\nGo to your destination: %s, %s (%s)." % (node+1, lat, lon, mid_lat, mid_lon, destination_name)
-            return message
-        if node == len(route)-1:
-            message = "Congratulations! You have reached your destination: %s.\n🏁🏁🏁" % (destination_name)
-            return message
-
-    def yolo(graph):
-        # for each node and its information...
-        for node1, info1 in graph.nodes.items():
-            print(node1, info1)
-            # for each adjacent node and its information...
-            for node2, info2 in graph.adj[node1].items():
-                print('    ', node2)
-                # osmnx graphs are multigraphs, but we will just consider their first edge
-                edge = info2[0]
-                # we remove geometry information from edges because we don't need it and take a lot of space
-                if 'geometry' in edge:
-                    del(edge['geometry'])
-                print('        ', edge)
+        return mapa

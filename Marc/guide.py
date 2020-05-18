@@ -11,7 +11,7 @@ class guide:
         as strings or a tuple with a point(the graph generated will be 750
         meters around that point)'''
         if isinstance(place, str):
-            graph = ox.graph_from_place(place, network_type='drive',
+            graph = ox.graph_from_place(place, network_type='all',
                                         simplify=True)
         elif isinstance(place, list):
             graph = ox.gdf_from_places(place, network_type='drive',
@@ -68,7 +68,10 @@ class guide:
             node_info['current_name'] = None
             node_info['length'] = None
             next_edge = graph.adj[directions[0]][directions[1]][0]
-            node_info['next_name'] = next_edge['name']
+            if 'name' in next_edge:
+                node_info['next_name'] = next_edge['name']
+            else:
+                node_info['next_name'] = None
             if isinstance(node_info['next_name'], list):
                 node_info['next_name'] = node_info['next_name'][0]
         if node == len(directions) - 2:  # penultimate part
@@ -79,7 +82,10 @@ class guide:
             node_info['dst'] = (destination_location[0],
                                 destination_location[1])
             edge = graph.adj[directions[node]][directions[node+1]][0]
-            node_info['current_name'] = edge['name']
+            if 'name' in edge:
+                node_info['current_name'] = edge['name']
+            else:
+                node_info['current_name'] = None
             node_info['length'] = edge['length']
             node_info['next_name'] = None
             if isinstance(node_info['current_name'], list):
@@ -119,10 +125,16 @@ class guide:
             node_info['dst'] = (graph.nodes[directions[i+2]]['y'],
                                 graph.nodes[directions[i+2]]['x'])
             edge = graph.adj[directions[i]][directions[i+1]][0]
-            node_info['current_name'] = edge['name']
+            if 'name' in edge:
+                node_info['current_name'] = edge['name']
+            else:
+                node_info['current_name'] = None
             node_info['length'] = edge['length']
             next_edge = graph.adj[directions[i+1]][directions[i+2]][0]
-            node_info['next_name'] = next_edge['name']
+            if 'name' in next_edge:
+                node_info['next_name'] = next_edge['name']
+            else:
+                node_info['next_name'] = None
             node_info['angle'] = next_edge['bearing'] - edge['bearing']
             if isinstance(node_info['current_name'], list):
                 node_info['current_name'] = node_info['current_name'][0]
