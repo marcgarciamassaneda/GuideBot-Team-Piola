@@ -259,7 +259,7 @@ def _check_distance(update, context):
     if n == len(route):
         return haversine(coordinates, (route[n-1]['mid'][0], route[n-1]['mid'][1]), unit=Unit.METERS) <= 5
     else:
-        return haversine(coordinates, (route[n]['mid'][0], route[n]['mid'][1])) <= route[n]['length']
+        return haversine(coordinates, (route[n]['mid'][0], route[n]['mid'][1]), unit=Unit.METERS) <= route[n]['length']
 
 
 def _check_wrong_direction(update, context):
@@ -275,8 +275,8 @@ def _check_wrong_direction(update, context):
     previous_node = (route[node-1]['src'][0], route[node-1]['src'][1])
     # the calculus of the distance between two points has been made with the
     # library haversine
-    return haversine(coordinates, next_node) > haversine(previous_node,
-                                                         next_node)
+    return (haversine(coordinates, next_node, unit=Unit.METERS) >
+            haversine(previous_node, next_node, unit=Unit.METERS) + 15)
 
 
 def _warn_wrong_direction(update, context):
@@ -383,7 +383,7 @@ def go(update, context):
         # the user's current location is obtainted from user_data
         coordinates = context.user_data['coordinates']
         # gets the destination name from the user's message
-        destination_name = ' '.join(context.args)
+        destination_name = ' '.join(context.args) + ", %s" % (graph_name)
         # convertion of the destination name (string) to a tuple
         # of coordinates using the osmnx library
         destination = ox.geo_utils.geocode(destination_name)
@@ -401,7 +401,7 @@ def go(update, context):
         # check if the source point is within the graph's range
         # if the distance from the source location to the first node is
         # larger than 5km, an error is rised
-        if haversine(coordinates, route[0]['mid']) > 5:
+        elif haversine(coordinates, route[0]['mid']) > 5:
             _source_location_error(update, context)
         else:
             file = "%d.png" % random.randint(1000000, 9999999)
