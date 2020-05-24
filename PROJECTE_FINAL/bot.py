@@ -7,7 +7,26 @@ import random
 import os
 
 
-'''explain the bot and user_data'''
+'''
+The module bot.py contains all the code related to the Telegram bot. Its
+goal is to react to the user commands and live location in order to lead him
+to an specific destination. The user has several commands at his disposal to
+obtain information about the bot and start a guided route to a chosen
+destination within a fixed graph. The module guide.py is used to get
+information about the guidance.
+
+This module uses the user data, a global dictionary used to store data and
+unique for every user ID. In the case of this bot, the chosen fields of the
+user data are the following ones:
+- coordinates : keeps the user's coordinates and is updated every time he moves
+- destination : stores the user's destination if he starts a route
+- route : stores the user's route to his destination
+- node : keeps the current checkpoint at every stage of the route
+- map : stores a map of the route created by the module guide.py
+
+All the fields related to a route are set to None once the user reaches his
+destination.
+'''
 
 
 def _fixed_graph(graph_name):
@@ -22,7 +41,7 @@ def _fixed_graph(graph_name):
         return Graph
 
 
-# global variable of a fixed graph
+# global variables of a fixed graph
 graph_name = "Girona"
 graph = _fixed_graph(graph_name)
 
@@ -41,7 +60,7 @@ def start(update, context):
 def help(update, context):
     '''Show the available commands to interact with the bot and use its
     services. It's activated when the bot receives the command /help.'''
-    text = ("I can be your captain and help you go wherever you want!👨‍✈️\n"
+    text = ("*I can be your captain and help you go wherever you want!👨‍✈️*\n"
             "Just type the following commands:\n\n"
             "/start - starts de conversation.\n\n"
             "/help - offers help about the available commands.\n\n"
@@ -80,7 +99,7 @@ def _mark_edge(update, context, filename):
     # the edge is marked using the staticmap library
     mapa.add_line(Line(coordinates, 'green', 4))
     # the current node is marked unless it's the last one
-    if (node != len(route)-1):
+    if (node != len(route)):
         mapa.add_marker(CircleMarker(coordinates_second, 'green', 10))
     picture = mapa.render()
     picture.save(filename)
@@ -217,7 +236,7 @@ def _particular_checkpoint_message(update, context):
         # a provisional random file is generated to store the map of the route
         file = "%d.png" % random.randint(1000000, 9999999)
         # the map of the route is edited to mark the last stretch
-        _mark_edge(update, context, 'fitxer.png')
+        _mark_edge(update, context, file)
         context.bot.send_message(chat_id=update.effective_chat.id, text=text1)
         context.bot.send_photo(chat_id=update.effective_chat.id,
                                photo=open(file, 'rb'))
@@ -229,7 +248,7 @@ def _particular_checkpoint_message(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text=text2)
         context.user_data['node'] += 1
     # if the current node is the destination point
-    if node == len(route):
+    elif node == len(route):
         text = ("Congratulations! You have reached your destination: %s."
                 "\n🏁🏁🏁" % (destination))
         # a provisional random file is generated to store the map of the route
@@ -239,7 +258,7 @@ def _particular_checkpoint_message(update, context):
         _mark_edge(update, context, file)
         context.bot.send_message(chat_id=update.effective_chat.id, text=text)
         context.bot.send_photo(chat_id=update.effective_chat.id,
-                               photo=open('fitxer.png', 'rb'))
+                               photo=open(file, 'rb'))
         # the file is removed after the photo is sent to avoid preserving
         # useless data and save memory space
         os.remove(file)
@@ -249,17 +268,34 @@ def _particular_checkpoint_message(update, context):
 
 
 def _check_distance(update, context):
-    '''Check if the distance between the current location of the user and the
-    next node is smaller than 5 meters, which means the user is practically
-    there. A boolean value is returned indicating if the condition has been
-    satisfied or not.'''
+    '''Check if the distance between the user's coordinates and the node after
+    the next node is smaller than the distance between the lenght of the edge
+    among the next two nodes. If that's true, it means that the user has
+    reached the checkpoint and is going to the next one. This implementation
+    has been chosen to prevent the live location delay and propitiate a fluid
+    route. A boolean value is returned indicating if the condition has been
+    satisfied or not.
+
+    The first node and the last two are treated as a particular case, as the
+    they are not connected to the other nodes by a graph edge (first and last
+    node) or the distance to the next node is unknown (the penultimate node).
+    '''
     coordinates = context.user_data['coordinates']
     route = context.user_data['route']
     node = context.user_data['node']
     next_node = (route[node-1]['mid'][0], route[node-1]['mid'][1])
-    # the calculus of the distance between two points has been made with the
-    # library haversine
-    return haversine(coordinates, next_node, unit=Unit.METERS) < 5
+    node_after_next = (route[node]['mid'][0], route[node]['mid'][1])
+    # the method used for the particular cases is to check if the distance
+    # between the user and the next node is smaller than 10 meters
+    if node == 1 or node == len(route) or node == len(route)-1:
+        return haversine(coordinates, next_node, unit=Unit.METERS) <= 10
+    else:
+        # apart from the criterion explained on the docstring, the method
+        # used for the particular cases is also checked
+        return ((haversine(coordinates, node_after_next,
+                unit=Unit.METERS) <= route[node]['length']) or
+                (haversine(coordinates, next_node=next_node,
+                           unit=Unit.METERS) <= 10))
 
 
 def _check_wrong_direction(update, context):
@@ -273,10 +309,10 @@ def _check_wrong_direction(update, context):
     node = context.user_data['node']
     next_node = (route[node-1]['mid'][0], route[node-1]['mid'][1])
     previous_node = (route[node-1]['src'][0], route[node-1]['src'][1])
-    # the calculus of the distance between two points has been made with the
-    # library haversine
-    return haversine(coordinates, next_node) > haversine(previous_node,
-                                                         next_node)
+    # there is a margin of 10 meters to prevent precision issues and avoid
+    # receiving a warning constantly
+    return (haversine(coordinates, next_node, unit=Unit.METERS) >
+            haversine(previous_node, next_node, unit=Unit.METERS) + 10)
 
 
 def _warn_wrong_direction(update, context):
@@ -295,8 +331,9 @@ def _live_location(update, context):
     the next node is checked to see if the user has reached the next
     checkpoint. In this case, a function that will guide the user to the next
     checkpoint is called.'''
-
-    message = update.edited_message if update.edited_message else update.message
+    message = (update.edited_message
+               if update.edited_message
+               else update.message)
     lat, lon = message.location.latitude, message.location.longitude
     context.user_data['coordinates'] = (lat, lon)
     # if the 'route' field from user_data is None, it means that the user
@@ -340,7 +377,7 @@ def _start_guidance(update, context, file):
 
 
 def _location_error(update, context):
-    '''Advert the user that his/her live location hasn't been sent. This
+    '''Warm the user that his/her live location hasn't been sent. This
     function is called when the user tries to use the /where and /go commands
     before sending the live location.'''
     text = "Please, send me your live location first. 📍"
@@ -348,10 +385,10 @@ def _location_error(update, context):
 
 
 def _destination_error(update, context):
-    '''Advert the user that there has been a problem with his/her destination.
+    '''Warn the user that there has been a problem with his/her destination.
     This function is called when the user uses the command /go without any
     destination, witt an unexistent one or it's out of the fixed graph's
-    range'''
+    range.'''
     text = ("You have not entered a destination or it's out of the graph's "
             "range.")
     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -361,8 +398,8 @@ def _destination_error(update, context):
 
 
 def _source_location_error(update, context):
-    '''Advert the user that his/her current location is out of the fixed graph's
-    range. This function is called by the command /go '''
+    '''Warn the user that his/her current location is out of the fixed graph's
+    range. This function is called by the command /go.'''
     text = ("Your current location is out of the graph's range. At this moment"
             " the bot is working with the fixed graph of %s." % (graph_name))
     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
@@ -372,13 +409,12 @@ def _source_location_error(update, context):
 
 
 def go(update, context):
-    '''Begin the guidance system, the principal fucntion of the bot.
-    The following fields are initialized in the user_data, which is an
-    internal dictionary exclusive for every chat ID: destination, route,
-    node and map.An error will be rised if the user hasn't provided his
-    location, as well as if the user hasn't specified a destination or it
-    doesn't exist. It's activated when the bot receives the command /go and
-    a destination (string).'''
+    '''Begin the guidance system, the principal function of the bot.
+    The following fields are initialized in the user_data dictionary
+    destination, route, node and map.An error will be rised if the user
+    hasn't provided his location, as well as if the user hasn't specified
+    a destination or it doesn't exist. It's activated when the bot receives
+    the command /go and a destination (string).'''
     try:
         # the user's current location is obtainted from user_data
         coordinates = context.user_data['coordinates']
@@ -386,7 +422,8 @@ def go(update, context):
         destination_name = ' '.join(context.args)
         # convertion of the destination name (string) to a tuple
         # of coordinates using the osmnx library
-        destination = ox.geo_utils.geocode(destination_name)
+        destination = ox.geo_utils.geocode((destination_name + ", %s") %
+                                           (graph_name))
         context.user_data['destination'] = destination_name
         # get the shortest route from the source point to the destination
         # using the module guide.py
@@ -401,7 +438,7 @@ def go(update, context):
         # check if the source point is within the graph's range
         # if the distance from the source location to the first node is
         # larger than 5km, an error is rised
-        if haversine(coordinates, route[0]['mid']) > 5:
+        elif haversine(coordinates, route[0]['mid']) > 5:
             _source_location_error(update, context)
         else:
             file = "%d.png" % random.randint(1000000, 9999999)
@@ -446,13 +483,19 @@ def where(update, context):
         _location_error(update, context)
 
 
-def _false_loc(update, context):
-    route = context.user_data['route']
-    node = context.user_data['node']
-    lat = route[node-1]['mid'][0]
-    lon = route[node-1]['mid'][1]
-    context.user_data['coordinates'] = (lat, lon)
-    _live_location(update, context)
+def _command_error(update, context):
+    '''Send a warning message to the user if the bot receives an unknown
+    command.'''
+    text = "Sorry, I didn't understand that command."
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text)
+
+
+def _unknown_message(update, context):
+    '''Warn the user if he/she sends an unknown message (not a command) to
+    the bot and offer help.'''
+    text = ("I'd love to gossip with you but I was not made for this, sorry. "
+            "🤷‍♂️\n\nPlease use the /help command to get help.")
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 
 def main():
@@ -473,14 +516,15 @@ def main():
     dispatcher.add_handler(telegram.CommandHandler('where', where))
     dispatcher.add_handler(telegram.CommandHandler('go', go))
     dispatcher.add_handler(telegram.CommandHandler('cancel', cancel))
+    dispatcher.add_handler(telegram.MessageHandler(telegram.Filters.command,
+                                                   _command_error))
+    dispatcher.add_handler(telegram.MessageHandler(telegram.Filters.text,
+                                                   _unknown_message))
 
     # add a message handler to call the fucntion _live_location every time that
     # a location is sent by the user
     dispatcher.add_handler(telegram.MessageHandler(telegram.Filters.location,
                                                    _live_location))
-
-    dispatcher.add_handler(telegram.CommandHandler('fake', _false_loc))
-
     # run the bot
     updater.start_polling()
 
