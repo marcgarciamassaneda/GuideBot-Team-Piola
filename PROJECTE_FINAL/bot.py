@@ -10,7 +10,7 @@ import os
 '''
 The module bot.py contains all the code related to the Telegram bot. Its
 goal is to react to the user commands and live location in order to lead him
-to an specific destination. The user has several commands at his disposal to
+to a specific destination. The user has several commands at his disposal to
 obtain information about the bot and start a guided route to a chosen
 destination within a fixed graph. The module guide.py is used to get
 information about the guidance.
