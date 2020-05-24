@@ -5,12 +5,14 @@ from haversine import haversine
 
 
 class guide:
+    '''Class with all the code related to getting the graphs corresponding to
+    maps and calculating routes.'''
 
     def download_graph(place):
         '''Download the graph of the place given as parameter. The place can
         be given in different formats: a string, a list of places represented
         as strings or a tuple with a point(the graph generated will be 750
-        meters around that point)'''
+        meters around that point).'''
         if isinstance(place, str):
             graph = ox.graph_from_place(place, network_type='drive',
                                         simplify=True)
@@ -28,7 +30,7 @@ class guide:
         return graph
 
     def save_graph(graph, filename):
-        '''Save the graph in your system with the filename given'''
+        '''Save the graph in your system with the filename given.'''
         nx.write_gpickle(graph, filename)
 
     def load_graph(filename):
@@ -57,7 +59,7 @@ class guide:
                                 destination_location):
         '''Determine if the first checkpoint is further or the same distance
         from the destination node than the source node. In such case, the first
-         checkpoint is useless and should be removed'''
+         checkpoint is useless and should be removed.'''
         first_checkpoint = (graph.nodes[directions[0]]['y'],
                             graph.nodes[directions[0]]['x'])
         return (haversine(source_location, destination_location) <=
@@ -67,7 +69,7 @@ class guide:
                                destination_location):
         '''Return the fragment of route of the cases that work differently:
         the first part, the penultimate part and the last part. The reason is
-        that they contain nodes that are not in the graph'''
+        that they contain nodes that are not in the graph.'''
         node_info = dict.fromkeys(['angle', 'current_name', 'dst', 'length',
                                   'mid', 'next_name', 'src'])
         node_info['angle'] = None
