@@ -284,14 +284,14 @@ def _check_distance(update, context):
     route = context.user_data['route']
     node = context.user_data['node']
     next_node = (route[node-1]['mid'][0], route[node-1]['mid'][1])
-    node_after_next = (route[node]['mid'][0], route[node]['mid'][1])
     # the method used for the particular cases is to check if the distance
     # between the user and the next node is smaller than 10 meters
-    if node == 1 or node == len(route) or node == len(route)-1:
+    if node == 1 or node == len(route)-1 or node == len(route):
         return haversine(coordinates, next_node, unit=Unit.METERS) <= 10
     else:
+        node_after_next = (route[node]['mid'][0], route[node]['mid'][1])
         # apart from the criterion explained on the docstring, the method
-        # used for the particular cases is also checked
+        # used for the particular cases is also checkeds
         return ((haversine(coordinates, node_after_next,
                 unit=Unit.METERS) <= route[node]['length']) or
                 (haversine(coordinates, next_node=next_node,
@@ -418,40 +418,48 @@ def go(update, context):
     try:
         # the user's current location is obtainted from user_data
         coordinates = context.user_data['coordinates']
-        # gets the destination name from the user's message
+        # get the destination name from the user's message
         destination_name = ' '.join(context.args)
-        # convertion of the destination name (string) to a tuple
-        # of coordinates using the osmnx library
-        destination = ox.geo_utils.geocode((destination_name + ", %s") %
-                                           (graph_name))
-        context.user_data['destination'] = destination_name
-        # get the shortest route from the source point to the destination
-        # using the module guide.py
-        route = guide.get_directions(graph, coordinates, destination)
-        context.user_data['route'] = route
-        context.user_data['node'] = 1
-        # check if the destination point is within the graph's range
-        # if the distance from the last node to the destination point
-        # is larger than 5km, an error is rised
-        if haversine(route[len(route)-1]['src'], destination) > 5:
+        # a copy of the destination name is done to raise an error if the user
+        # sends the command /go without a destination
+        destination_name_copy = destination_name
+        destination_name_copy.replace(" ", "")
+        # the spaces are removed and it is checked if the copy's value is none
+        if not destination_name_copy:
             _destination_error(update, context)
-        # check if the source point is within the graph's range
-        # if the distance from the source location to the first node is
-        # larger than 5km, an error is rised
-        elif haversine(coordinates, route[0]['mid']) > 5:
-            _source_location_error(update, context)
         else:
-            file = "%d.png" % random.randint(1000000, 9999999)
-            # generate a map of the graph with the route with the module
-            # guide.py
-            # the map is stored in a provisional random file and saved in the
-            # user_data dictionary
-            mapa = guide.plot_directions(graph, coordinates, destination,
-                                         route, file)
-            context.user_data['map'] = mapa
-            # special function to treat the stretch from the user's source
-            # point to the first node of the route
-            _start_guidance(update, context, file)
+            # convertion of the destination name (string) to a tuple
+            # of coordinates using the osmnx library
+            destination = ox.geo_utils.geocode((destination_name + ", %s") %
+                                               (graph_name))
+            context.user_data['destination'] = destination_name
+            # get the shortest route from the source point to the destination
+            # using the module guide.py
+            route = guide.get_directions(graph, coordinates, destination)
+            context.user_data['route'] = route
+            context.user_data['node'] = 1
+            # check if the destination point is within the graph's range
+            # if the distance from the last node to the destination point
+            # is larger than 5km, an error is rised
+            if haversine(route[len(route)-1]['src'], destination) > 5:
+                _destination_error(update, context)
+            # check if the source point is within the graph's range
+            # if the distance from the source location to the first node is
+            # larger than 5km, an error is rised
+            elif haversine(coordinates, route[0]['mid']) > 5:
+                _source_location_error(update, context)
+            else:
+                file = "%d.png" % random.randint(1000000, 9999999)
+                # generate a map of the graph with the route with the module
+                # guide.py
+                # the map is stored in a provisional random file and saved in
+                # the user_data dictionary
+                mapa = guide.plot_directions(graph, coordinates, destination,
+                                             route, file)
+                context.user_data['map'] = mapa
+                # special function to treat the stretch from the user's source
+                # point to the first node of the route
+                _start_guidance(update, context, file)
     except KeyError:
         _location_error(update, context)
     except Exception:
