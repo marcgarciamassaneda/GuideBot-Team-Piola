@@ -63,7 +63,7 @@ has the following structure in the list:
 
 {'angle': 5.09099999999998, 'current_name': 'Pujada de la Creu de Palau', 'dst': (41.9627576, 2.8201146), 'length': 111.344, 'mid': (41.9636285, 2.8204915), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.9646037, 2.8207882)},
 
-{'angle': -8.336999999999989, 'current_name': 'Pujada de la Creu de Palau', 'dst': (41.9621516, 2.8199782), 'length': 101.831, 'mid': (41.9627576, 2.8201146), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.9636285, 2.8204915)},
+{'angle': 8.336999999999989, 'current_name': 'Pujada de la Creu de Palau', 'dst': (41.9621516, 2.8199782), 'length': 101.831, 'mid': (41.9627576, 2.8201146), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.9636285, 2.8204915)},
 
 {'angle': None, 'current_name': 'Pujada de la Creu de Palau', 'dst': (41.962369, 2.819995), 'length': 68.332, 'mid': (41.9621516, 2.8199782), 'next_name': None, 'src': (41.9627576, 2.8201146)},
 
