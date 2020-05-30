@@ -107,7 +107,7 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - The commands `/start`, `/help` and `/author`:
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/start.png" />
+<center><img src='START.png'></center>
 
 
 - The `/where` command shows the user its current location:
@@ -123,6 +123,13 @@ Below, there are some examples of the interaction between the user and the bot:
 <img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/checkpoint.png" />
 
 <img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/destination.png" />
+
+-If the user doesen't follow the route and gets lost, the bot sends a worning:
+
+
+
+
+-If the user wants to cancel the route, it uses the command `/cancel`. However, if there isn't an active route, the bot sends a warning:
 
 
 - If the user uses the command `/where` or `/go` before sending its location, the bot sends a warning:

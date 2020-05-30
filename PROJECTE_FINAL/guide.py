@@ -14,14 +14,14 @@ class guide:
         as strings or a tuple with a point(the graph generated will be 750
         meters around that point).'''
         if isinstance(place, str):
-            graph = ox.graph_from_place(place, network_type='drive',
+            graph = ox.graph_from_place(place, network_type='all',
                                         simplify=True)
         elif isinstance(place, list):
-            graph = ox.gdf_from_places(place, network_type='drive',
+            graph = ox.gdf_from_places(place, network_type='all',
                                        simplify=True)
         elif isinstance(place, tuple):
             graph = ox.graph_from_point(place, distance=750,
-                                        network_type='drive',
+                                        network_type='all',
                                         simplify=True)
         else:
             raise TypeError('Incorrect parameter to define a place')
