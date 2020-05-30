@@ -75,7 +75,7 @@ Draws a route to go from the source location to the destination location in a gr
 on a map in PNG format using `staticmap`.
 
 
-## `go` module
+## `bot` module
 
 This module enables the connection between the user and Telegram. The bot begins downloading (or loading) a chosen fixed graph and then waits for the user's interaction. The Telegram user has several commands at his disposal to obtain information about the bot and start a guided route to a chosen destination:
 
