@@ -107,42 +107,42 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - The commands `/start`, `/help` and `/author`:
 
-![Examples of the commands `/start`, `/help` and `/author`.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/start.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/start.png" />
 
 
 - The `/where` command shows the user its current location:
 
-![Example of the command `/where`.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/where.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/where.png" />
 
 
 - The command `/go destination` begins the guidance of the user to the chosen destination. The bot keeps sending instructions as the user moves:
 
 
-![Example of the command `/go destination`.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/inici_ruta.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/inici_ruta.png" />
 
-![When the user reaches the first checkpoint.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/checkpoint.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/checkpoint.png" />
 
-![When the user reaches its destination.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/destination.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/destination.png" />
 
 
 - If the user uses the command `/where` or `/go` before sending its location, the bot sends a warning:
 
-![Example of the location error.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/location_error.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/location_error.png" />
 
 
-- If the user types the command `/go` without a destination or it's out of the fixed graph's range (5km), the bot sends a warning:
+- If the user types the command `/go` without a destination or it's out of the fixed graph's range (5km), the bot sends a warning. In this case the user types _Parlament Europeu_ as a destination, which is in Brussels and the fixed graph is Girona:
 
-![The user types _Parlament Europeu_ as a destination, which is in Brussels and the fixed graph is Girona.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/destination_error.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/destination_error.png" />
 
 
-- Furthermore, if the current location of the user it's outside of the graph's range, another warning is sent:
+- Furthermore, if the current location of the user it's outside of the graph's range, another warning is sent. In this case the user types _Sagrada Família_ as a destination, but the fixed graph is Girona:
 
-![The user types _Sagrada Família_ as a destination, but the fixed graph is Girona.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/source_error.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/inici_ruta.png" />
 
 
 - Finally, if the user makes a mistake typing a command or the bot receives a casual message, a warning is sent:
 
-![Usual typing errors of the user.](/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/screenshots/gossip.png){width=350px}
+<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/gossip.png" />
 
 
 ## Authors
