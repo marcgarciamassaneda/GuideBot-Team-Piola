@@ -51,7 +51,7 @@ The `guide` module contains the following functions:
 - `print_graph(graph)`: Prints every node and all its adjacent edges information
 of a graph. It has debugging functionality.
 - `get_directions(graph, source_location, destination_location)`: Gives a list with
-information of the guidance of the shortest route from the source location to the destination location .
+information for the guidance of the shortest route from the source location to the destination location .
 The two points are given through their coordinates (latitude, longitude). Every section of the route
 has the following structure in the list:
 
@@ -94,7 +94,7 @@ To use the bot, it is needed an _access token_, which is an identifier provided 
 
 Finally, to make the bot operative, it just has to be executed in the same folder that the module `guide.py` and the file `token.txt`. Then, all the users of Telegram will be able to use the bot.
 
-You must save the photo `author.JPG` in the same folder that the module `bot` to be available to see it.
+You must save the photo `author.JPG` in the same folder that the module `bot` to be available to see the picture of the authors.
 
 ## Examples
 Below, there are some examples of the interaction between the user and the bot:
