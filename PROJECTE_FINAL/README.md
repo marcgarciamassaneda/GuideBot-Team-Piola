@@ -19,7 +19,7 @@ The Pyhton packages used are the following:
 
 You can install them via `pip3 install` like in the following example:
 
-```
+```sh
 $ pip3 install networkx
 ```
 
@@ -38,7 +38,7 @@ It's also required to have downloaded the Telegram application, as it will be th
 The system consists of two modules:
 
 - `guide.py`, which is an independent module with the function of getting and saving graphs corresponding to maps and make the calculations of the shortest routes.
-- `bot.py`, which contains all the code related to the Telegram bot. Its goal is to react to the user commands and live location in order to lead him to a specific destination within a fixed graph. The module guide.py is used to get information about the guidance.
+- `bot.py`, which contains all the code related to the Telegram bot. Its goal is to react to the user commands and live location in order to lead him to a specific destination within a fixed graph. The module `guide.py` is used to get information about the guidance.
 
 
 ## `guide` module
@@ -60,6 +60,8 @@ has the following structure in the list:
 {'angle': 38.99600000000001, 'current_name': 'Carrer de Josep Aguilera i Martí', 'dst': (41.9636285, 2.8204915), 'length': 212.721, 'mid': (41.9646037, 2.8207882), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.965998, 2.8198635)},
 
 ````
+*This is an example of a section of a route in Girona, Spain.*
+
 - `plot_directions(graph, source_location, destination_location, directions, filename, width=400, height=400)`:
 Draws a route to go from the source location to the destination location in a graph 
 on a map in PNG format using `staticmap`.
@@ -97,7 +99,7 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - The commands `/start`, `/help` and `/author`:
 
-<center><img src='start.PNG'></center>
+<center><img src='start_and_help.PNG'></center>
 
 
 - The `/where` command shows the user its current location:
