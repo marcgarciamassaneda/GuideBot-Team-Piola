@@ -114,10 +114,10 @@ Below, there are some examples of the interaction between the user and the bot:
 - The command `/go destination` begins the guidance of the user to the chosen destination. The bot keeps sending instructions as the user moves:
 
 
-<center>
-<img width="350" src='start_route.PNG'/>
-<img width="350" src='checkpoint.PNG'/>
-</center>
+<p align="center">
+  <img width="350" src="start_route.PNG"/>
+  <img width="350" src="checkpoint.PNG"/>
+<//p>
 
 <center><img width="350" src='destination.PNG'></center>
 
