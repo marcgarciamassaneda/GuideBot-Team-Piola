@@ -41,7 +41,7 @@ def _fixed_graph(graph_name):
 
 
 # global variables of a fixed graph
-graph_name = "Barcelona"
+graph_name = "Girona"
 graph = _fixed_graph(graph_name)
 
 
@@ -77,7 +77,7 @@ def author(update, context):
     '''Return information about the authors of the project.
     It's activated when the bot receives the command /author.'''
     text = ("The creators of this project are Marc Garcia and Jofre Poch,"
-            "the Team Piola!")
+            " the Team Piola!")
     context.bot.send_message(chat_id=update.effective_chat.id, text=text)
     context.bot.send_photo(chat_id=update.effective_chat.id,
                            photo=open('authors.JPG', 'rb'))
