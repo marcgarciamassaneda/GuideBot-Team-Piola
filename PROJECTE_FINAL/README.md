@@ -38,7 +38,7 @@ It's also required to have downloaded the Telegram application, as it will be th
 The system consists of two modules:
 
 - `guide.py`, which is an independent module with the function of getting and saving graphs corresponding to maps and make the calculations of the shortest routes.
-- `bot.py`, contains all the code related to the Telegram bot. Its goal is to react to the user commands and live location in order to lead him to a specific destination within a fixed graph. The module guide.py is used to get information about the guidance.
+- `bot.py`, which contains all the code related to the Telegram bot. Its goal is to react to the user commands and live location in order to lead him to a specific destination within a fixed graph. The module guide.py is used to get information about the guidance.
 
 
 ## `guide` module
@@ -56,7 +56,6 @@ The two points are given through their coordinates (latitude, longitude). Every 
 has the following structure in the list:
 
 ```python
-[...]
 
 {'angle': 38.99600000000001, 'current_name': 'Carrer de Josep Aguilera i Martí', 'dst': (41.9636285, 2.8204915), 'length': 212.721, 'mid': (41.9646037, 2.8207882), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.965998, 2.8198635)},
 
