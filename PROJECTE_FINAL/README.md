@@ -23,7 +23,7 @@ You can install them via `pip3 install` like in the following example:
 $ pip3 install networkx
 ```
 
-Nonetheless, `osmnx` also requires to install `spatialindex` 
+Nonetheless, `osmnx` also requires installing `spatialindex` 
 (installable with` brew install spatialindex` on Mac or
 `apt install libspatialindex-dev` on Ubuntu). They can all also be installed with
 Anaconda.
@@ -57,7 +57,7 @@ has the following structure in the list:
 
 ```python
 
-{'angle': 38.99600000000001, 'current_name': 'Carrer de Josep Aguilera i Martí', 'dst': (41.9636285, 2.8204915), 'length': 212.721, 'mid': (41.9646037, 2.8207882), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.965998, 2.8198635)},
+{'angle': 38.99600000000001, 'current_name': 'Carrer de Josep Aguilera i Martí', 'dst': (41.9636285, 2.8204915), 'length': 212.721, 'mid': (41.9646037, 2.8207882), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.965998, 2.8198635)}
 
 ````
 *This is an example of a section of a route in Girona, Spain.*
@@ -74,7 +74,7 @@ This module enables the connection between the user and Telegram. The bot begins
 
 - `/start`: starts the conversation.
 - `/help`: offers help about the available commands.
-- `/author`: shows information about the authors of the project.
+- `/author`: shows information about the authors of the project. You must download the photo authors.JPG to be able to see the picture.
 - `/go destination`: starts a guidance from the location of the user to the chosen destination.
 - `/where`: shows the current location of the user.
 - `/cancel`: cancels the active guidance of the user.
@@ -112,7 +112,6 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - The command `/go destination` begins the guidance of the user to the chosen destination. The bot keeps sending instructions as the user moves:
 
-
 <center><img width="350" src='start_route.PNG'></center>
 
 <center><img width="350" src='checkpoint.PNG'></center>
@@ -132,11 +131,11 @@ Below, there are some examples of the interaction between the user and the bot:
 <center><img width="350" src='location_error.PNG'></center>
 
 
-- If the user types the command `/go` without a destination or it's out of the fixed graph's range (5km), the bot sends a warning. In this case the user types _Parlament Europeu_ as a destination, which is in Brussels and the fixed graph is Girona:
+- If the user types the command `/go` without a destination or it's out of the fixed graph's range (5 km), the bot sends a warning. In this case the user types _Parlament Europeu_ as a destination, which is in Brussels and the fixed graph is Girona:
 
 <center><img width="350" src='destination_error.png'></center>
 
-- Furthermore, if the current location of the user it's outside of the graph's range, another warning is sent. In this case the user types _Sagrada Família_ as a destination, but the fixed graph is Girona:
+- Furthermore, if the current location of the user it's outside the graph's range, another warning is sent. In this case the user types _Sagrada Família_ as a destination, but the fixed graph is Girona:
 
 <center><img width="350" src='source_error.png'></center>
 
