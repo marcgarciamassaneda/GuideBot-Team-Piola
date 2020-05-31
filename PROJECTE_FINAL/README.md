@@ -74,7 +74,7 @@ This module enables the connection between the user and Telegram. The bot begins
 
 - `/start`: starts the conversation.
 - `/help`: offers help about the available commands.
-- `/author`: shows information about the authors of the project. You must download the photo authors.JPG to be able to see the picture.
+- `/author`: shows information about the authors of the project. You must download the photo authors.JPG to be able to see the picture of the authors.
 - `/go destination`: starts a guidance from the location of the user to the chosen destination.
 - `/where`: shows the current location of the user.
 - `/cancel`: cancels the active guidance of the user.
