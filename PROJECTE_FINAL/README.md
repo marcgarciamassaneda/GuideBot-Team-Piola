@@ -74,7 +74,7 @@ This module enables the connection between the user and Telegram. The bot begins
 
 - `/start`: starts the conversation.
 - `/help`: offers help about the available commands.
-- `/author`: shows information about the authors of the project. You must download the photo authors.JPG to be able to see the picture of the authors.
+- `/author`: shows information about the authors of the project.
 - `/go destination`: starts a guidance from the location of the user to the chosen destination.
 - `/where`: shows the current location of the user.
 - `/cancel`: cancels the active guidance of the user.
@@ -94,6 +94,7 @@ To use the bot, it is needed an _access token_, which is an identifier provided 
 
 Finally, to make the bot operative, it just has to be executed in the same folder that the module `guide.py` and the file `token.txt`. Then, all the users of Telegram will be able to use the bot.
 
+You must save the photo `author.JPG` in the same folder that the module `bot` to be available to see it.
 
 ## Examples
 Below, there are some examples of the interaction between the user and the bot:
