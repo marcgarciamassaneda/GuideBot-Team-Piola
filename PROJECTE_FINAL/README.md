@@ -88,7 +88,7 @@ Finally, the users must share they live location to the bot before activating th
 
 To use the bot, it is needed an _acces token_, which is an identifier provided by Telegram unique to identify every bot. To generate and implement one do the following steps:
 
-- Visit the [@BotFather](https://telegram.me/botfather). bot on Telegram.
+- Visit the [@BotFather](https://telegram.me/botfather) bot on Telegram.
 - Use the command `/newbot` and give the required information (full name and username of the bot).
 - Save the generated _acces token_ into a file called `token.txt` in the same folder that the module `bot`.
 
@@ -136,7 +136,7 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - Furthermore, if the current location of the user it's outside of the graph's range, another warning is sent. In this case the user types _Sagrada Família_ as a destination, but the fixed graph is Girona:
 
-<center><img width="350" src='source_error.PNG'></center>
+<center><img src='source_error.PNG'></center>
 
 - Finally, if the user makes a mistake typing a command or the bot receives a casual message, a warning is sent:
 
