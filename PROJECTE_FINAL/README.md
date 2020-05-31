@@ -25,7 +25,7 @@ $ pip3 install networkx
 
 Nonetheless, `osmnx` also requires to install `spatialindex` 
 (installable with` brew install spatialindex` on Mac or
-`apt install libspatialindex-dev` on Ubuntu). They can also be installed all with
+`apt install libspatialindex-dev` on Ubuntu). They can all also be installed with
 Anaconda.
 
 All the necessary software to run the project is in the file `requirements.txt`.
