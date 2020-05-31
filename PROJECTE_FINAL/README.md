@@ -62,6 +62,7 @@ has the following structure in the list:
 ````
 *This is an example of a section of a route in Girona, Spain.*
 
+
 - `plot_directions(graph, source_location, destination_location, directions, filename, width=400, height=400)`:
 Draws a route to go from the source location to the destination location in a graph 
 on a map in PNG format using `staticmap`.
@@ -99,7 +100,7 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - The commands `/start`, `/help` and `/author`:
 
-<center><img src='start_and_help.PNG'></center>
+<center><img width="350" src='start_and_help.PNG'></center>
 
 
 - The `/where` command shows the user its current location:
