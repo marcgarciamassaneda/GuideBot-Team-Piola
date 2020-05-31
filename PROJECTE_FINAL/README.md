@@ -7,7 +7,7 @@
 **Guidebot** is a Python project that using a Telegram Bot, users can be guided from 
 their location to a destination through a map obtained by [Open Street Map](https://www.openstreetmap.org). 
 
-## Prerequisites
+### Prerequisites
 
 The Pyhton packages used are the following:
 
@@ -33,7 +33,7 @@ All the necessary software to run the project is in the file `requirements.txt`.
 It's also required to have downloaded the Telegram application, as it will be the platform to interact with the bot.
 
 
-## System architecture
+### System architecture
 
 The system consists of two modules:
 
@@ -105,44 +105,42 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - The `/where` command shows the user its current location:
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/where.png" />
+<center><img width="350" src='where.PNG'></center>
 
 
 - The command `/go destination` begins the guidance of the user to the chosen destination. The bot keeps sending instructions as the user moves:
 
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/inici_ruta.png" />
+<center><img width="350" src='start_route.PNG'></center>
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/checkpoint.png" />
+<center><img width="350" src='checkpoint.PNG'></center>
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/destination.png" />
+<center><img width="350" src='destination.PNG'></center>
 
 -If the user doesen't follow the route and gets lost, the bot sends a worning:
 
-
+<center><img width="350" src='wrong_direction.PNG'></center>
 
 -If the user wants to cancel the route, it uses the command `/cancel`. However, if there isn't an active route, the bot sends a warning:
 
-
+<center><img width="350" src='cancel.PNG'></center>
 
 - If the user uses the command `/where` or `/go` before sending its location, the bot sends a warning:
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/location_error.png" />
+<center><img width="350" src='location_error.PNG'></center>
 
 
 - If the user types the command `/go` without a destination or it's out of the fixed graph's range (5km), the bot sends a warning. In this case the user types _Parlament Europeu_ as a destination, which is in Brussels and the fixed graph is Girona:
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/destination_error.png" />
-
+<center><img width="350" src='destination_error.PNG'></center>
 
 - Furthermore, if the current location of the user it's outside of the graph's range, another warning is sent. In this case the user types _Sagrada Família_ as a destination, but the fixed graph is Girona:
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/inici_ruta.png" />
-
+<center><img width="350" src='source_error.PNG'></center>
 
 - Finally, if the user makes a mistake typing a command or the bot receives a casual message, a warning is sent:
 
-<img width="350" src="/Users/jofre/Desktop/GCED/AP2/GuideBot-Team-Piola/PROJECTE_FINAL/README_photos/gossip.png" />
+<center><img width="350" src='typing_error.PNG'></center>
 
 
 ## Authors
