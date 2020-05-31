@@ -100,10 +100,9 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - The commands `/start`, `/help`, `/author`:
 
-<center>
-<img width="350" src='start_and_help.PNG'/>
-<img width="350" src='author.PNG'/>
-</center>
+<center><img width="350" src='start_and_help.PNG'></center>
+
+<center><img width="350" src='authors_readme.PNG'></center>
 
 
 - The `/where` command shows the user its current location:
@@ -114,20 +113,19 @@ Below, there are some examples of the interaction between the user and the bot:
 - The command `/go destination` begins the guidance of the user to the chosen destination. The bot keeps sending instructions as the user moves:
 
 
-<p align="center">
-  <img width="350" src="start_route.PNG"/>
-  <img width="350" src="checkpoint.PNG"/>
-<//p>
+<center><img width="350" src='start_route.PNG'></center>
+
+<center><img width="350" src='checkpoint.PNG'></center>
 
 <center><img width="350" src='destination.PNG'></center>
 
-- If the user doesen't follow the route and gets lost, the bot sends a warning:
+- If the user doesn't follow the route and gets lost, the bot sends a warning:
 
 <center><img width="350" src='wrong_direction.PNG'></center>
 
 - If the user wants to cancel the route, it uses the command `/cancel`. However, if there isn't an active route, the bot sends a warning:
 
-<center><img width="350" src='cancel.PNG'></center>
+<center><img width="350" src='cancel.png'></center>
 
 - If the user uses the command `/where` or `/go` before sending its location, the bot sends a warning:
 
@@ -136,11 +134,11 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - If the user types the command `/go` without a destination or it's out of the fixed graph's range (5km), the bot sends a warning. In this case the user types _Parlament Europeu_ as a destination, which is in Brussels and the fixed graph is Girona:
 
-<center><img width="350" src='destination_error.PNG'></center>
+<center><img width="350" src='destination_error.png'></center>
 
 - Furthermore, if the current location of the user it's outside of the graph's range, another warning is sent. In this case the user types _Sagrada Família_ as a destination, but the fixed graph is Girona:
 
-<center><img src='source_error.PNG'></center>
+<center><img width="350" src='source_error.png'></center>
 
 - Finally, if the user makes a mistake typing a command or the bot receives a casual message, a warning is sent:
 
