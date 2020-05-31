@@ -9,20 +9,21 @@ import os
 
 '''
 The module bot.py contains all the code related to the Telegram bot. Its
-goal is to react to the user commands and live location in order to lead him
-to a specific destination within a fixed graph. The module guide.py is used
-to get information about the guidance.
+goal is to react to the user commands and live location in order to lead
+him/her to a specific destination within a fixed graph. The module guide.py
+is used to get information about the guidance.
 
 This module uses the user data, a global dictionary used to store data and
 unique for every user ID. In the case of this bot, the chosen fields of the
 user data are the following ones:
-- coordinates : keeps the user's coordinates and is updated every time he moves
-- destination : stores the user's destination if he starts a route
-- route : stores the user's route to his destination
+- coordinates : keeps the user's coordinates and is updated every time he/she
+                moves
+- destination : stores the user's destination if he/she starts a route
+- route : stores the user's route to his/her destination
 - node : keeps the current checkpoint at every stage of the route
 - map : stores a map of the route created by the module guide.py
 
-All the fields related to a route are set to None once the user reaches his
+All the fields related to a route are set to None once the user reaches his/her
 destination.
 
 '''
@@ -67,7 +68,7 @@ def help(update, context):
             "/go destí - begins to guide the user to get from their current"
             "position to the chosen destination point.\n"
             "_For example: /go Campus Nord._\n\n"
-            "/where - shows the current localization of the user.\n\n"
+            "/where - shows the current location of the user.\n\n"
             "/cancel - cancels the active guidance system.")
     chat_id = update.effective_chat.id
     context.bot.send_message(chat_id=chat_id, text=text, parse_mode='Markdown')

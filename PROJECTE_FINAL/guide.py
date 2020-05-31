@@ -194,7 +194,7 @@ class guide:
         '''Draw the route from a source location to a destination location
         in a map.'''
         mapa = StaticMap(width, height)
-        # The source location and the destination location are marked in the
+        # the source location and the destination location are marked in the
         # map as big blue circles
         mapa.add_marker(CircleMarker((source_location[1], source_location[0]),
                                      'blue', 20))
