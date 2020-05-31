@@ -86,11 +86,11 @@ Finally, the users must share they live location to the bot before activating th
 
 ## Execution
 
-To use the bot, it is needed an _acces token_, which is an identifier provided by Telegram unique to identify every bot. To generate and implement one do the following steps:
+To use the bot, it is needed an _access token_, which is an identifier provided by Telegram unique to identify every bot. To generate and implement one do the following steps:
 
 - Visit the [@BotFather](https://telegram.me/botfather) bot on Telegram.
 - Use the command `/newbot` and give the required information (full name and username of the bot).
-- Save the generated _acces token_ into a file called `token.txt` in the same folder that the module `bot`.
+- Save the generated _access token_ into a file called `token.txt` in the same folder that the module `bot`.
 
 Finally, to make the bot operative, it just has to be executed in the same folder that the module `guide.py` and the file `token.txt`. Then, all the users of Telegram will be able to use the bot.
 
@@ -98,9 +98,12 @@ Finally, to make the bot operative, it just has to be executed in the same folde
 ## Examples
 Below, there are some examples of the interaction between the user and the bot:
 
-- The commands `/start`, `/help` and `/author`:
+- The commands `/start`, `/help`, `/author`:
 
-<center><img width="350" src='start_and_help.PNG'></center>
+<center>
+<img width="350" src='start_and_help.PNG'/>
+<img width="350" src='author.PNG'/>
+</center>
 
 
 - The `/where` command shows the user its current location:
@@ -111,17 +114,18 @@ Below, there are some examples of the interaction between the user and the bot:
 - The command `/go destination` begins the guidance of the user to the chosen destination. The bot keeps sending instructions as the user moves:
 
 
-<center><img width="350" src='start_route.PNG'></center>
-
-<center><img width="350" src='checkpoint.PNG'></center>
+<center>
+<img width="350" src='start_route.PNG'/>
+<img width="350" src='checkpoint.PNG'/>
+</center>
 
 <center><img width="350" src='destination.PNG'></center>
 
--If the user doesen't follow the route and gets lost, the bot sends a worning:
+- If the user doesen't follow the route and gets lost, the bot sends a warning:
 
 <center><img width="350" src='wrong_direction.PNG'></center>
 
--If the user wants to cancel the route, it uses the command `/cancel`. However, if there isn't an active route, the bot sends a warning:
+- If the user wants to cancel the route, it uses the command `/cancel`. However, if there isn't an active route, the bot sends a warning:
 
 <center><img width="350" src='cancel.PNG'></center>
 
