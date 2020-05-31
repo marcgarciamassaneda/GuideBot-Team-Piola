@@ -123,7 +123,7 @@ Below, there are some examples of the interaction between the user and the bot:
 
 <center><img width="350" src='wrong_direction.PNG'></center>
 
-- If the user wants to cancel the route, it uses the command `/cancel`. However, if there isn't an active route, the bot sends a warning:
+- If the user wants to cancel the route, he/she uses the command `/cancel`. However, if there isn't an active route, the bot sends a warning:
 
 <center><img width="350" src='cancel.png'></center>
 
