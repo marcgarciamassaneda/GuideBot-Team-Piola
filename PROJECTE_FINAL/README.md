@@ -4,7 +4,7 @@
 
 ## Introduction
 
-**Guidebot** is a Pyhton project that using a Telegram Bot, users can be guided from 
+**Guidebot** is a Python project that using a Telegram Bot, users can be guided from 
 their location to a destination through a map obtained by [Open Street Map](https://www.openstreetmap.org). 
 
 ## Prerequisites
@@ -37,9 +37,8 @@ It's also required to have downloaded the Telegram application, as it will be th
 
 The system consists of two modules:
 
-- `guide.py`, which is an independent module with the function of getting and 
-saving graphs corresponding to maps and make the calculations of the shortest routes.
-- `bot.py`, 
+- `guide.py`, which is an independent module with the function of getting and saving graphs corresponding to maps and make the calculations of the shortest routes.
+- `bot.py`, contains all the code related to the Telegram bot. Its goal is to react to the user commands and live location in order to lead him to a specific destination within a fixed graph. The module guide.py is used to get information about the guidance.
 
 
 ## `guide` module
@@ -59,15 +58,7 @@ has the following structure in the list:
 ```python
 [...]
 
-{'angle': 38.99600000000001, 'current_name': 'Carrer de Josep Aguilera i Martí', 'dst': (41.9636285, 2.8204915), 'length': 212.721, 'mid': (41.9646037, 2.8207882), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.965998, 2.8198635)}, 
-
-{'angle': 5.09099999999998, 'current_name': 'Pujada de la Creu de Palau', 'dst': (41.9627576, 2.8201146), 'length': 111.344, 'mid': (41.9636285, 2.8204915), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.9646037, 2.8207882)},
-
-{'angle': 8.336999999999989, 'current_name': 'Pujada de la Creu de Palau', 'dst': (41.9621516, 2.8199782), 'length': 101.831, 'mid': (41.9627576, 2.8201146), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.9636285, 2.8204915)},
-
-{'angle': None, 'current_name': 'Pujada de la Creu de Palau', 'dst': (41.962369, 2.819995), 'length': 68.332, 'mid': (41.9621516, 2.8199782), 'next_name': None, 'src': (41.9627576, 2.8201146)},
-
-{'angle': None, 'current_name': None, 'dst': None, 'length': None, 'mid': (41.962369, 2.819995), 'next_name': None, 'src': (41.9621516, 2.8199782)}]
+{'angle': 38.99600000000001, 'current_name': 'Carrer de Josep Aguilera i Martí', 'dst': (41.9636285, 2.8204915), 'length': 212.721, 'mid': (41.9646037, 2.8207882), 'next_name': 'Pujada de la Creu de Palau', 'src': (41.965998, 2.8198635)},
 
 ````
 - `plot_directions(graph, source_location, destination_location, directions, filename, width=400, height=400)`:
@@ -95,7 +86,7 @@ Finally, the users must share they live location to the bot before activating th
 
 To use the bot, it is needed an _acces token_, which is an identifier provided by Telegram unique to identify every bot. To generate and implement one do the following steps:
 
-- Visit the @BotFather bot on Telegram.
+- Visit the [@BotFather](https://telegram.me/botfather). bot on Telegram.
 - Use the command `/newbot` and give the required information (full name and username of the bot).
 - Save the generated _acces token_ into a file called `token.txt` in the same folder that the module `bot`.
 
@@ -107,7 +98,7 @@ Below, there are some examples of the interaction between the user and the bot:
 
 - The commands `/start`, `/help` and `/author`:
 
-<center><img src='GuideBot-Team-Piola/PROJECTE_FINAL/start.PNG'></center>
+<center><img src='start.PNG'></center>
 
 
 - The `/where` command shows the user its current location:
